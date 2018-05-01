@@ -6,7 +6,7 @@ import android.os.Handler;
 
 public class SplashActivity extends Activity {
 
-
+//ffdfdfd
     @Override
     protected void onCreate(Bundle savedInstanceState){
         setContentView(R.layout.activity_splash);

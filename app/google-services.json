@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "990262732975",
+    "firebase_url": "https://neodop-nadop.firebaseio.com",
+    "project_id": "neodop-nadop",
+    "storage_bucket": "neodop-nadop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990262732975:android:5fb1036daca02a19",
+        "android_client_info": {
+          "package_name": "com.example.software3.neodop_nadop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "990262732975-t19h30vt8kboe7a0rteipbj46ou6i3nd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxN4mUvcusScQxmrkSgqJldytCWVeVuD0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

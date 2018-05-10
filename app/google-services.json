@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "990262732975-mipjihttobr62laa3el73ui81ttl3iak.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.software3.neodop_nadop",
+            "certificate_hash": "467b9e22e65bc36daf0a8bfd6e7f0ad084ce7005"
+          }
+        },
+        {
           "client_id": "990262732975-t19h30vt8kboe7a0rteipbj46ou6i3nd.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "990262732975-t19h30vt8kboe7a0rteipbj46ou6i3nd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -80,5 +80,6 @@ inline void Grid::update_user(const Coordinate &c1) {
 
 
 int Grid::test_run() {
+	# TODO: Write some test cases for the Grid!
 	return 0;
 }

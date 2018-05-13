@@ -18,7 +18,7 @@ public class SplashActivity extends Activity {
             public void run() {
                 finish();
             }
-        }, 2500);// 3 초
+        }, 2500);// 1000당 1초
     }
 
 

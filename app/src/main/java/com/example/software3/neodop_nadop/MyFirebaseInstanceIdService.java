@@ -5,11 +5,8 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -49,6 +46,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService{
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 // Do whatever you want after the
                 // token is successfully stored on the server
+                connection.disconnect();
             }
 
         } catch (MalformedURLException e) {

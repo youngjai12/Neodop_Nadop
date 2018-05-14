@@ -185,8 +185,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
                                }else{
-                                  Toast.makeText(getApplicationContext(),"No Such Data",Toast.LENGTH_LONG);
-                               }
+                                   Toast.makeText(getApplicationContext(),"No Such Data",Toast.LENGTH_LONG).show();
+
+                                   Intent intent = new Intent(getApplicationContext(),CreateProfileActivity.class);
+                                   startActivity(intent);
+                                   finish();
+
+                                  }
 
                         }
 
@@ -194,8 +199,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 }else{
                     if(!mAuth.getCurrentUser().isEmailVerified()){
-                        Toast.makeText(getApplicationContext(),"이메일 인증을 먼저 해 주세요",
-                                Toast.LENGTH_LONG);
+                        Toast.makeText(getApplicationContext(),"이메일을 보냈습니다. 이메일 인증을 먼저 해 주세요",
+                                Toast.LENGTH_LONG).show();
+                        FirebaseUser curUser = mAuth.getCurrentUser();
+                        curUser.sendEmailVerification();
                     }
 
                 }

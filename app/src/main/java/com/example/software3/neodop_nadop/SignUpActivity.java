@@ -83,11 +83,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                      if(task.isSuccessful()){
-                         Toast.makeText(getApplicationContext(),"메일 인증을 해주세요", Toast.LENGTH_LONG);
                          FirebaseUser user = mAuth.getCurrentUser();
-                         user.sendEmailVerification();
+                         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                             @Override
+                             public void onComplete(@NonNull Task<Void> task) {
+                                 Toast.makeText(getApplicationContext(),"메일 인증을 해주세요", Toast.LENGTH_LONG).show();
+                             }
+                         });
                      }else{
-                         Toast.makeText(getApplicationContext(),"에러가 발생했습니다.", Toast.LENGTH_LONG);
+                         Toast.makeText(getApplicationContext(),"에러가 발생했습니다.", Toast.LENGTH_LONG).show();
                      }
 
             }

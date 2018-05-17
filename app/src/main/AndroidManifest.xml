@@ -8,8 +8,10 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!--위치 인식 허가 permission 추가-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -20,6 +22,17 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+
+        <!--Google Map Api 추가 -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAm7OproRXMImAg8zQFYNbclea8vLteW2k">
+
+        </meta-data>
+
+
+
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
@@ -47,7 +60,8 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".DisabledMainActivity" />
         <activity android:name=".HelperMainActivity" />
-        <activity android:name=".CreateProfileActivity"></activity>
+        <activity android:name=".CreateProfileActivity" />
+        <activity android:name=".ConnectedActivity"></activity>
     </application>
 
 </manifest>

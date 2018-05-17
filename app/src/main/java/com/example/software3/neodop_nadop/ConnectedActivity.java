@@ -186,6 +186,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
                 //지도타입 - 일반
                 this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                this.googleMap.getUiSettings().setZoomControlsEnabled(true);   //zoom 버튼 추가
 
                 //나의 위치 설정
                 LatLng position = new LatLng(mLatitude , mLongitude);

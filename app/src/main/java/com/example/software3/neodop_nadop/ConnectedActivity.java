@@ -33,6 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
+//서로 수락시 연결될 Activity
 public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCallback{
 
             //GoogleMap 객체

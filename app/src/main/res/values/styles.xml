@@ -12,4 +12,8 @@
         <item name="android:windowActionBar">false</item>
     </style>
 
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/ic_launcher_background</item>
+    </style>
+
 </resources>

@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
 
-        startActivity(new Intent(getApplicationContext(),SplashActivity.class));
+       // startActivity(new Intent(getApplicationContext(),SplashActivity.class));
         // Splash Activity 실행
 
         super.onCreate(savedInstanceState);
@@ -170,7 +170,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                DocumentSnapshot userProfile = task.getResult();
                                if(task.isSuccessful() && userProfile.exists()){
-                                   if(userProfile.get("isDisabled").equals("true")){
+                                   if(userProfile.get("disabled").equals("true")){
                                        //장애인 전용 메뉴 activity 실행
                                        Intent intent = new Intent(getApplicationContext(), DisabledMainActivity.class);
                                        startActivity(intent);

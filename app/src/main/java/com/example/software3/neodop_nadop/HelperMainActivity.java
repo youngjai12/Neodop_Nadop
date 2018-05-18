@@ -1,5 +1,7 @@
 package com.example.software3.neodop_nadop;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -61,6 +63,11 @@ public class HelperMainActivity extends AppCompatActivity  {
         final String userUid = mAuth.getUid();
 
 
+        //버그 수정
+        if(isServiceRunningCheck()){
+            swc.setChecked(true);
+        }
+
         swc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -79,6 +86,16 @@ public class HelperMainActivity extends AppCompatActivity  {
         });
 
 
+    }
+    //switch on 후 어플 종료후 다시 시작 할 때 필요
+    public boolean isServiceRunningCheck() {
+        ActivityManager manager = (ActivityManager) this.getSystemService(Activity.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ("com.example.software3.neodop_nadop.GPSService".equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -1,0 +1,31 @@
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 8b4a1bf0a25e32b1bdaa54fa5586b8ad848c5a1d)
++++ app/src/main/AndroidManifest.xml	(revision 15e783ea1b7cb789dee8aac0b12913454a4b754a)
+@@ -8,7 +8,7 @@
+     <uses-permission android:name="android.permission.READ_CONTACTS" />
+     <uses-permission android:name="android.permission.INTERNET" />
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+-    
++
+     <!--위치 인식 허가 permission 추가-->
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+Index: app/src/main/java/com/example/software3/neodop_nadop/ConnectedActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/software3/neodop_nadop/ConnectedActivity.java	(revision 8b4a1bf0a25e32b1bdaa54fa5586b8ad848c5a1d)
++++ app/src/main/java/com/example/software3/neodop_nadop/ConnectedActivity.java	(revision 15e783ea1b7cb789dee8aac0b12913454a4b754a)
+@@ -186,6 +186,7 @@
+ 
+                 //지도타입 - 일반
+                 this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
++                this.googleMap.getUiSettings().setZoomControlsEnabled(true);   //zoom 버튼 추가
+ 
+                 //나의 위치 설정
+                 LatLng position = new LatLng(mLatitude , mLongitude);

@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -19,9 +20,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.annotation.Nullable;
 
-public class GPSService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+public class GPSService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener  {
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
 
@@ -31,6 +41,7 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
 
     boolean bool=true;
     private static final String LOGSERVICE = "#######";
+    httpSendTask s = new httpSendTask();
 
     @Override
     public void onCreate() {
@@ -101,14 +112,96 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
         Position pos = new Position(location.getLatitude(),location.getLongitude());
 
         FDB.getReference("userposition").child(user.getUid()).setValue(pos);
+        String la = ""+location.getLatitude();
+        String lo = ""+location.getLongitude();
+        String uid = user.getUid();
+        String time = "";
 
+        SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        String today = null;
+        today = formatter.format(cal.getTime());
+        Timestamp ts = Timestamp.valueOf(today);
+
+
+        Log.e("시간?",""+ts.getTime()/1000);
+        time += ts.getTime()/1000;
+
+        //
+        if(s!=null) {
+            s.cancel(true);
+            s= null;
+            httpSendTask s = new httpSendTask();
+            s.execute(la, lo, uid, time);//,uid,ts.toString());
+
+            Log.e("if문에","dddd");
+        }else{
+
+            httpSendTask s = new httpSendTask();
+            s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,la, lo, uid, time);//,uid,ts.toString());
+            Log.e("else문에","dddd");
+
+//            s.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,la, lo, uid, time);//,uid,ts.toString());
+
+        }
 
     }
+
+    public  class httpSendTask extends AsyncTask<String, Void, Void> {
+            private boolean cancelled = false;
+        @Override
+        protected Void doInBackground(String... strings) {
+
+                if(isCancelled()){
+                    return null;
+                }
+                Log.e("들어오긴하니?","dd");
+                try {
+                    URL url = new URL("http://neodop-nadop.iptime.org/updateloc");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+
+                    connection.setRequestMethod("POST");
+                    DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+
+                    dos.writeBytes("lat=" + Double.parseDouble(strings[0])+"lon="+Double.parseDouble(strings[1])+"uid="+strings[2]+"timestamp="+Long.parseLong(strings[3]));
+
+                    connection.connect();
+                    Log.e("send position to server",strings[0]+" "+strings[1]+" "+strings[2]+ " "+strings[3]);
+
+/*
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        // Do whatever you want after the
+                        // token is successfully stored on the server
+                        connection.disconnect();
+                    }
+*/
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            cancelled = true;
+        }
+
+    }
+
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.i(LOGSERVICE, "onDestroy - Estou sendo destruido ");
+//        s.onCancelled();
         stopLocationUpdate();
     }
 
@@ -163,4 +256,5 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
     }
 
 }
+
 

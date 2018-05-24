@@ -198,7 +198,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
 
                 }else{
-                    if(!mAuth.getCurrentUser().isEmailVerified()){
+                    if(!user.isEmailVerified()){
                         Toast.makeText(getApplicationContext(),"이메일을 보냈습니다. 이메일 인증을 먼저 해 주세요",
                                 Toast.LENGTH_LONG).show();
                         FirebaseUser curUser = mAuth.getCurrentUser();

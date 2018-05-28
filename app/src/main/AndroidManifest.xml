@@ -33,7 +33,8 @@
 
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustNothing">
 
         </activity>
         <activity
@@ -44,11 +45,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".DisabledMainActivity" />
-        <activity android:name=".HelperMainActivity" />
-        <activity android:name=".CreateProfileActivity" />
-        <activity android:name=".ConnectedActivity"/>
+        <activity android:name=".SignUpActivity"  android:theme="@style/AppTheme" />
+        <activity android:name=".DisabledMainActivity"  android:theme="@style/AppTheme" />
+        <activity android:name=".HelperMainActivity"  android:theme="@style/AppTheme" />
+        <activity android:name=".CreateProfileActivity"  android:theme="@style/AppTheme" />
+        <activity android:name=".ConnectedActivity" android:theme="@style/AppTheme" />
 
         <!-- Services -->
         <service android:name=".GPSService" />

@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Splash Activity 실행
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login_main);
 
 
         // Set up the login form.
@@ -223,11 +223,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()){
             case R.id.sign_in_button:
                 SignIn();
+                finish();
                 break;
             case R.id.sign_up_button:
                 Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
                 startActivity(intent);
-                finish();
                 break;
 
         }

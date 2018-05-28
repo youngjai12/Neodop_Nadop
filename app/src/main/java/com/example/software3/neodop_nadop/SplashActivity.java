@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class SplashActivity extends Activity {
 
@@ -34,6 +35,10 @@ public class SplashActivity extends Activity {
                 mAuth = FirebaseAuth.getInstance();
                 user  = mAuth.getCurrentUser();
                 DB = FirebaseFirestore.getInstance();
+                FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                        .setTimestampsInSnapshotsEnabled(true)
+                        .build();
+                DB.setFirestoreSettings(settings);
                 routeToPage(user);
                 finish();
             }

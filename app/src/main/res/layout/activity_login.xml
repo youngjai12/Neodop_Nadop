@@ -37,12 +37,13 @@
 
                 <EditText
                     android:id="@+id/email"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:background="@drawable/ic_login_form"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -52,7 +53,7 @@
 
                 <EditText
                     android:id="@+id/password"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_password"
                     android:imeActionId="6"
@@ -60,7 +61,8 @@
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:background="@drawable/ic_login_form"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -71,14 +73,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="로그인"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/login_btn"
+                />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/sign_up_button"
                 android:text="회원가입"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/login_btn"/>
 
         </LinearLayout>
     </ScrollView>

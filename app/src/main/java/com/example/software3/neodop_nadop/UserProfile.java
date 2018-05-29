@@ -8,6 +8,7 @@ public class UserProfile {
     private boolean isDisabled;
     private String typeOfDisabled;
     private String token;
+    private String sex;
 
     public String getName() {
         return name;
@@ -32,12 +33,18 @@ public class UserProfile {
     public String getToken(){
         return token;
     }
-    public UserProfile(String name, int age , String phoneNumber, boolean isDisabled, String typeOfDisabled,String token) {
+
+    public String getSex() {
+        return sex;
+    }
+
+    public UserProfile(String sex, String name, int age , String phoneNumber, boolean isDisabled, String typeOfDisabled, String token) {
         this.name = name;
         this.age = age;
         this.phoneNumber = phoneNumber;
         this.isDisabled = isDisabled;
         this.typeOfDisabled = typeOfDisabled;
         this.token = token;
+        this.sex = sex;
     }
 }

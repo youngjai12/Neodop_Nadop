@@ -15,27 +15,68 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="장애 여부"
+        android:textStyle="bold"
+        android:textColor="@color/colorProfile"
 
 
-        app:layout_constraintBottom_toTopOf="@+id/profile_name"
+        app:layout_constraintBottom_toTopOf="@+id/toggle"
         app:layout_constraintHorizontal_bias="0.307"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintVertical_bias="0.871" />
-    <Switch
+        android:layout_marginBottom="10dp" />
+
+    <RadioGroup
         style="?android:textAppearanceSmall"
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="성별"
-        android:id="@+id/profile_sex"
-        app:layout_constraintBottom_toTopOf="@+id/profile_name"
+        android:checkedButton="@+id/male"
+        android:id="@+id/toggle"
+        android:layout_width="190dp"
+        android:layout_height="30dp"
+
+
+        app:layout_constraintHorizontal_bias="0.5"
+
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/out_line"
+        android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/profile_name"
 
-        app:layout_constraintHorizontal_bias="0.740"
-        app:layout_constraintVertical_bias="0.871"
-        />
+        >
+
+        <RadioButton
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="1dp"
+            android:id="@+id/male"
+            android:background="@drawable/toggle_widget_background"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="남성"
+            android:textColor="#FFFFFF" />
+
+        <RadioButton
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:id="@+id/female"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_widget_background"
+            android:button="@null"
+            android:gravity="center"
+            android:text="여성"
+            android:textColor="#FFFFFF" />
+    </RadioGroup>
+
 
     <EditText
         style="?android:textAppearanceSmall"
@@ -86,7 +127,7 @@
         android:background="@drawable/ic_edittext_phonenumber"
         android:gravity="center"
 
-        android:hint="휴대전화 번호"
+        android:hint="휴대전화 번호(-없이)"
 
         android:layout_marginBottom="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -106,7 +147,7 @@
         android:hint="장애의 종류"
         android:gravity="center"
 
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="35dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

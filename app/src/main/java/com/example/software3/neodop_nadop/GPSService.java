@@ -167,18 +167,19 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
                     DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
 
 
-                    dos.writeBytes("lat=" + Double.parseDouble(strings[0])+"lon="+Double.parseDouble(strings[1])+"uid="+strings[2]+"timestamp="+Long.parseLong(strings[3]));
+                    dos.writeBytes("&lat=" + Double.parseDouble(strings[0])+"&lon="+Double.parseDouble(strings[1])+"&uid="+strings[2]+"&timestamp="+Long.parseLong(strings[3]));
 
                     connection.connect();
                     Log.e("send position to server",strings[0]+" "+strings[1]+" "+strings[2]+ " "+strings[3]);
 
-/*
+
                     if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                         // Do whatever you want after the
                         // token is successfully stored on the server
+                        Log.e("받음","받음");
                         connection.disconnect();
                     }
-*/
+
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

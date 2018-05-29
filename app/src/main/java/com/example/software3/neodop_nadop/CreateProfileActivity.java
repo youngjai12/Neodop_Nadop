@@ -1,6 +1,7 @@
 package com.example.software3.neodop_nadop;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,7 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,11 +26,15 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     EditText username , age, phonenumber,typeofDisabled;
     Switch isDisabled;
     Button submitBtn;
+    RadioGroup RGsex;
+    RadioButton male,female;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore DB;
     private FirebaseUser user;
     private FirebaseDatabase FDB;
+
+    String sex="male";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,12 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         typeofDisabled=(EditText)findViewById(R.id.profile_typeofdisabled);
 
         isDisabled = (Switch)findViewById(R.id.profile_isdisabled);
+
+        RGsex = (RadioGroup)findViewById(R.id.toggle);
+        male = (RadioButton)findViewById(R.id.male);
+        female = (RadioButton)findViewById(R.id.female);
+
+
 
         submitBtn = (Button)findViewById(R.id.profile_submit);
 
@@ -52,6 +66,24 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                     typeofDisabled.setVisibility(View.INVISIBLE);
             }
         });
+
+
+        RGsex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    switch (checkedId){
+                        case R.id.male:
+                            sex = "male";
+                            Toast.makeText(getApplicationContext(),sex,Toast.LENGTH_SHORT).show();
+                            break;
+                        case R.id.female:
+                            sex = "female";
+                            Toast.makeText(getApplicationContext(),sex,Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+            }
+        });
+
 
     }
 
@@ -69,7 +101,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
         Intent intent = getIntent();
 
-        UserProfile profile = new UserProfile(username.getText().toString(),
+        UserProfile profile = new UserProfile(sex.toString(),username.getText().toString(),
                 Integer.parseInt(age.getText().toString()),phonenumber.getText().toString(),disable,
                 typeofDisabled.getText().toString(),  FirebaseInstanceId.getInstance().getToken());
 

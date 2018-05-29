@@ -42,9 +42,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="@string/prompt_password"
-        android:imeActionId="6"
+
         android:imeActionLabel="@string/action_sign_in_short"
-        android:imeOptions="actionUnspecified"
+        android:imeActionId="6"
         android:inputType="textPassword"
         android:maxLines="1"
         android:singleLine="true"
@@ -67,12 +67,11 @@
 
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:text="SIGN IN"
+        android:text="로그인"
         android:background="@drawable/selector_clicked"
         android:layout_marginBottom="10dp"
 
         app:layout_constraintHorizontal_bias="0.5"
-
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/sign_up_button"
@@ -80,11 +79,13 @@
         />
 
     <Button
+        style="?android:textAppearanceSmall"
+
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:id="@+id/sign_up_button"
 
-        android:text="SIGN UP"
+        android:text="회원가입"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:background="@drawable/selector_clicked"

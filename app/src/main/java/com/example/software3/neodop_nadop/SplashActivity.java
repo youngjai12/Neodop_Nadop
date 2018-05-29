@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -66,6 +67,13 @@ public class SplashActivity extends Activity {
                                 startActivity(intent);
                                 //     finish();
                             }
+                        }else{
+                            Toast.makeText(getApplicationContext(),"No Such Data",Toast.LENGTH_LONG).show();
+
+                            Intent intent = new Intent(getApplicationContext(),CreateProfileActivity.class);
+                            startActivity(intent);
+                            finish();
+
                         }
                     }
                 }

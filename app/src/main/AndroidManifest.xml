@@ -45,10 +45,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity"  android:theme="@style/AppTheme" />
+        <activity android:name=".SignUpActivity"  android:theme="@style/AppTheme"  android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".DisabledMainActivity"  android:theme="@style/AppTheme" />
         <activity android:name=".HelperMainActivity"  android:theme="@style/AppTheme" />
-        <activity android:name=".CreateProfileActivity"  android:theme="@style/AppTheme" />
+        <activity android:name=".CreateProfileActivity"  android:theme="@style/AppTheme"  android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".ConnectedActivity" android:theme="@style/AppTheme" />
 
         <!-- Services -->

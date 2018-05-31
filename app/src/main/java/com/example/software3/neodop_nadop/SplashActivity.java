@@ -28,23 +28,29 @@ public class SplashActivity extends Activity {
         setTheme(R.style.AppTheme_Launcher);
 
         super.onCreate(savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
+        user  = mAuth.getCurrentUser();
+        DB = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        DB.setFirestoreSettings(settings);
+        routeToPage(user);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
 
+
             @Override
             public void run() {
-                mAuth = FirebaseAuth.getInstance();
-                user  = mAuth.getCurrentUser();
-                DB = FirebaseFirestore.getInstance();
-                FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                        .setTimestampsInSnapshotsEnabled(true)
-                        .build();
-                DB.setFirestoreSettings(settings);
-                routeToPage(user);
+
                 finish();
             }
         }, 2500);// 1000당 1초
+
+
     }
+
     protected void routeToPage(FirebaseUser user){
 
 
@@ -72,7 +78,6 @@ public class SplashActivity extends Activity {
 
                             Intent intent = new Intent(getApplicationContext(),CreateProfileActivity.class);
                             startActivity(intent);
-                            finish();
 
                         }
                     }

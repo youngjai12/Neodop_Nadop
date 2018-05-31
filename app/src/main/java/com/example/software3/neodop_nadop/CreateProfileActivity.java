@@ -107,7 +107,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
 
 
-
         DB.collection("users").document(userUid).set(profile).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

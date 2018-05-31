@@ -222,7 +222,7 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
     private void initLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(3000);
-        mLocationRequest.setFastestInterval(1000); //여기의 시간을 조정하면 됨 // 변경될때 찾을 수 있는 최소 interval 주로 이걸 사용될듯
+        mLocationRequest.setFastestInterval(3000); //여기의 시간을 조정하면 됨 // 변경될때 찾을 수 있는 최소 interval 주로 이걸 사용될듯
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     }

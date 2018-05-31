@@ -8,11 +8,17 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!--Location detect permission added-->
+    <!-- Location detect permission added -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -21,35 +27,51 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.software3.neodop_nadop"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
 
-
-        <!--Google Map Api -->
+        <!-- Google Map Api -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAm7OproRXMImAg8zQFYNbclea8vLteW2k">
-
-        </meta-data>
-
+            android:value="AIzaSyAm7OproRXMImAg8zQFYNbclea8vLteW2k"></meta-data>
 
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing"></activity>
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/noTitle" >
+            android:theme="@style/noTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity"  android:theme="@style/AppTheme"  android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".DisabledMainActivity"  android:theme="@style/AppTheme" />
-        <activity android:name=".HelperMainActivity"  android:theme="@style/AppTheme" />
-        <activity android:name=".CreateProfileActivity"  android:theme="@style/AppTheme"  android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".ConnectedActivity" android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SignUpActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".DisabledMainActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HelperMainActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".CreateProfileActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".ConnectedActivity"
+            android:theme="@style/AppTheme" />
 
         <!-- Services -->
         <service android:name=".GPSService" />
@@ -63,6 +85,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".testActivity"></activity>
     </application>
 
 </manifest>

@@ -198,6 +198,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
 
                 }else{
+                    if(user == null){
+                        Toast.makeText(getApplicationContext(),"등록되지 않은 유저입니다. 회원가입을 먼저 해 주세요",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     if(!user.isEmailVerified()){
                         Toast.makeText(getApplicationContext(),"이메일을 보냈습니다. 이메일 인증을 먼저 해 주세요",
                                 Toast.LENGTH_LONG).show();

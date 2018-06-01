@@ -2,10 +2,15 @@ package com.example.software3.neodop_nadop;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.ExifInterface;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -15,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,6 +31,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +42,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 //서로 수락시 연결될 Activity
@@ -48,6 +71,9 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
             FirebaseUser user;
             FirebaseDatabase FDB;
             DatabaseReference DB;
+            FirebaseFirestore UDB;
+            private StorageReference mStorageReference;
+            private FirebaseStorage mFirebaseStorage;
 
 
             //나의 위도 경도 고도
@@ -62,25 +88,115 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
             //취소 버튼
             Button cancel;
+            TextView profile,typeOfProfile;
+            CircleImageView userImage;
+
+            //value
+            String uid=null;
+
 
 
             @Override
             protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
-                setContentView(R.layout.activity_disabled_main);
+                setContentView(R.layout.activity_connected);
                 locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
                 mAuth = FirebaseAuth.getInstance();
                 user = mAuth.getCurrentUser();
                 FDB = FirebaseDatabase.getInstance();
                 DB = FirebaseDatabase.getInstance().getReference();
+                UDB = FirebaseFirestore.getInstance();
+                mFirebaseStorage = FirebaseStorage.getInstance();
 
+                //intent 값 가져오기(상대방의 uid 가져오기) 및 상대방의 정보 가져오기
+                Intent intent1 = getIntent();
+                uid = intent1.getStringExtra("useruid");
+
+                userImage = (CircleImageView)findViewById(R.id.connected_image_profile);
+
+
+
+                //상대방 profile 사진 불러오기
+                if(!mFirebaseStorage.getReference().child(uid+".jpg").equals(null)) {
+                    mStorageReference = mFirebaseStorage.getReference().child(uid +".jpg");
+
+                    try {
+                        final File localFile = File.createTempFile("images", "jpg");
+                        mStorageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Log.d("successful", localFile.getName());
+                                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                ExifInterface exif = null;
+
+                                try {
+                                    exif = new ExifInterface(localFile.getAbsolutePath());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                int exifOrientation;
+                                int exifDegree;
+
+                                if (exif != null) {
+
+                                    exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                                    Log.d("orientation", exifOrientation + "");
+                                    exifDegree = exifOrientationToDegrees(exifOrientation);
+                                } else {
+                                    exifDegree = 0;
+                                }
+
+                                userImage.setImageBitmap(rotate(bitmap, exifDegree));
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+
+
+                profile = (TextView)findViewById(R.id.connected_profile_text);
+                typeOfProfile = (TextView)findViewById(R.id.connected_typeOfProfile);
+
+                //상대방 프로필 정보 가져오기
+                if(uid.equals("")){
+                   Toast.makeText(getApplicationContext(),"상대방의 Uid가 인식되지 않습니다.",Toast.LENGTH_SHORT).show();
+                }
+                if(!uid.equals("")) {
+                    DocumentReference docRef = UDB.collection("users").document(uid);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.get("disabled").toString().equals("true")) {
+                                    typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  \n 장애종류  \n 도움종류  \n");
+                                    profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString() + "\n"
+                                            + document.get("typeOfDisabled").toString() + "\n" + "아픕니다" + "\n");
+                                } else {
+                                    typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  ");
+                                    profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString());
+                                }
+                            }
+                        }
+
+                        ;
+                    });
+                }
                 cancel = (Button)findViewById(R.id.connected_cancel);
-
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //여기서 취소버튼 누를시 장애인은 장애인 메인화면으로 , 비장애인은 비 장애인 메인 화면으로 돌아가게해주면됨
+                        //여기서 취소버튼 누를시 장애인은 장애인 메인화면으로 , 비장애인은 비 장애인 메인 화면으로 돌아가게해주면됨 -> finish()해주면 될듯
+                        finish();
                     }
                 });
 
@@ -182,8 +298,8 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
                 //이 부분에서 상대방의 userUid를 가져와서 이 String 변수에 넣어주면 됩니다.
                 String myUid = user.getUid();
-                String yourUid = "상대방의 UID를 서버로 부터 받아서 여기에 입력";
-
+             //   String yourUid = "상대방의 UID를 서버로 부터 받아서 여기에 입력";
+                String yourUid = uid;
                 this.googleMap = googleMap;
 
                 //지도타입 - 일반
@@ -227,7 +343,8 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                             yourPosition.remove();
 
                         //변경됨 위치 추가
-                        yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(changedPos.getLatitude(),changedPos.getLongitude())).title("상대방의 위치"));
+                        if(changedPos != null)
+                            yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(changedPos.getLatitude(),changedPos.getLongitude())).title("상대방의 위치"));
                     }
 
                     @Override
@@ -238,6 +355,27 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
 
             }
+
+
+
+    //이미지 회전버그수정
+    private int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    //사진 회전시키기
+    private Bitmap rotate(Bitmap bitmap, float degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
 }
 
 

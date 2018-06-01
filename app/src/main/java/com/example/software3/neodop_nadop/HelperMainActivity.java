@@ -67,7 +67,7 @@ import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class HelperMainActivity extends AppCompatActivity  {
+public class HelperMainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //constant
     private static final int PICK_FROM_CAMERA = 0;
@@ -84,18 +84,19 @@ public class HelperMainActivity extends AppCompatActivity  {
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
-    //layouts
 
+
+    //layouts
     private String imageFilePath;
     private Uri photoUri;
-    //private URI picUri;
-
     Switch swc;
     TextView textView;
+    Button btn1,btn2,btn3,btn4;
    // ImageView userImage;
     CircleImageView userImage;
     Button userChangeImage,test;
     Bitmap bitmap;
+
 
 
 
@@ -106,15 +107,26 @@ public class HelperMainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_helper_main);
 
         //layouts
-      //  textView = (TextView)findViewById(R.id.textView2);
+        textView = (TextView)findViewById(R.id.helper_lower_text);
         swc = (Switch)findViewById(R.id.help_enable);
         userImage = (CircleImageView)findViewById(R.id.helper_image_profile);
         userChangeImage = (Button)findViewById(R.id.helper_image_profile_change);
         test = (Button)findViewById(R.id.helper_profile_change);
 
+        btn1 =(Button)findViewById(R.id.helper_lower_btn1);
+        btn2 =(Button)findViewById(R.id.helper_lower_btn2);
+        btn3 =(Button)findViewById(R.id.helper_lower_btn3);
+        btn4 =(Button)findViewById(R.id.helper_lower_btn4);
+
+        btn1.setOnClickListener(this);
+        btn2.setOnClickListener(this);
+        btn3.setOnClickListener(this);
+        btn4.setOnClickListener(this);
+
         //사진을 원형으로 표시
 //        userImage.setBackground(new ShapeDrawable(new OvalShape()));
       //  userImage.setClipToOutline(true);
+
 
 
         //firebase user
@@ -128,7 +140,7 @@ public class HelperMainActivity extends AppCompatActivity  {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),testActivity.class);
+                Intent intent = new Intent(getApplicationContext(),CreateProfileActivity.class);
                 startActivity(intent);
 
             }
@@ -496,5 +508,51 @@ public class HelperMainActivity extends AppCompatActivity  {
         } catch (Exception p_e) {
         }
         return m_imgUri;
+    }
+
+    @Override
+    public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.helper_lower_btn1:
+                    btn1.setBackgroundResource(R.drawable.ic_btn_pressed);
+                    btn2.setBackgroundResource(R.drawable.ic_btn);
+                    btn3.setBackgroundResource(R.drawable.ic_btn);
+                    btn4.setBackgroundResource(R.drawable.ic_btn);
+                    String text = "시각장애인 도움팁 \n\n 1. 길을 안내할 때에는 숫자를 사용해서 \n정확하게 설명합니다. \n\n2.도로의 위험요소 같은 것들을 \n상세히 잘 설명해줍니다.\n\n" +
+                            "3. 안내할 때 장애인이 수월하게 걸을 수 있도록 팔을 내주는것은 문제가 없으나 \n 시각장애인의 팔을 잡거나 끄는 행위는 실례되는 행위이므로 주의합시다\n\n" +
+                            "4. 길 안내를 할 때에는 저기, 여기 와 같은 \n애매한 표현은 삼가도록 주의합니다.";
+                    textView.setText(text);
+                    break;
+                case R.id.helper_lower_btn2:
+                    btn2.setBackgroundResource(R.drawable.ic_btn_pressed);
+                    btn1.setBackgroundResource(R.drawable.ic_btn);
+                    btn3.setBackgroundResource(R.drawable.ic_btn);
+                    btn4.setBackgroundResource(R.drawable.ic_btn);
+                    String text1="청각장애인 도움팁 \n\n 1. 청각 장애인분들은 입모양을 보고 알아들을 수 있기 때문에 듣지 못 할 것이라 생각하고 , 함부로 말하지 않고, 언행상의 예의를 지켜주세요." +
+                            "\n\n 2. 청각장애인에게 몸짓, 표정, 입모양은 매우 중요하므로, 마주보며 입모양을 뚜렷하게 말하면 대부분 알아들을 수 있습니다.\n\n 3. 그렇지만 과장된 얼굴표현과 몸동작을 할 필요는 없습니다.";
+                    textView.setText(text1);
+                    break;
+                case R.id.helper_lower_btn3:
+                    btn3.setBackgroundResource(R.drawable.ic_btn_pressed);
+                    btn1.setBackgroundResource(R.drawable.ic_btn);
+                    btn2.setBackgroundResource(R.drawable.ic_btn);
+                    btn4.setBackgroundResource(R.drawable.ic_btn);
+
+                    String text2 ="지체 장애인 도움 팁\n\n1. 휠체어를 탄 장애인이 계단을 오르려 할 경우, 앞으로 내려오는 것이 편한지,\n 뒤로 내려오는 것이 편한지를 먼저 물어보고 도울 수 있도록 주의합니다. " +
+                            "\n\n2. 휠체어를 사용하지는 않는 보행장애인의 경우, 계단을 오르내릴 때, 단순히 팔을 잡는 것은 도움이 되지 않고, 허리를 부축하고 계단을 오르내릴 수 있도록 주의합니다. ";
+                    textView.setText(text2);
+                    break;
+                case R.id.helper_lower_btn4:
+                    btn4.setBackgroundResource(R.drawable.ic_btn_pressed);
+                    btn1.setBackgroundResource(R.drawable.ic_btn);
+                    btn2.setBackgroundResource(R.drawable.ic_btn);
+                    btn3.setBackgroundResource(R.drawable.ic_btn);
+                    String text3 ="발달 장애인 도움 팁\n\n1. 발달 장애인은 말의 발음이 불명확하고, 단어선택이 미숙한 경향이 있으므로, 주의 깊게 들어서 의사를 정확히 판단할 수 있도록 주의합니다." +
+                            "\n\n2. 비장애인이 의사를 표현할 때, 발음을 분명히 하고, 쉬운 단어를 선택하며, 몸짓 등의 행동을 덧붙여 이해를 돕습니다." +
+                            "\n\n3. 그리고 말을 할 때에 눈을 맞추며 얘기할 수 있도록 하고, 지능이 부족하지만, 생활연령에 맞게 존칭어를 사용합니다. ";
+                    textView.setText(text3);
+
+                    break;
+            }
     }
 }

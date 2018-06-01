@@ -84,10 +84,13 @@
         android:id="@+id/profile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLength="15"
         android:hint="이름"
         android:background="@drawable/ic_edittext"
         android:gravity="center"
         android:privateImeOptions="defaultInputmode=korean"
+        android:maxLines="1"
+        android:singleLine="true"
 
         android:layout_marginBottom="10dp"
         app:layout_constraintHorizontal_bias="0.5"
@@ -100,10 +103,13 @@
     <EditText
         style="?android:textAppearanceSmall"
 
+        android:maxLength="2"
         android:id="@+id/profile_age"
         android:inputType="numberDecimal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:singleLine="true"
 
         android:hint="나이"
         android:background="@drawable/ic_edittext_age"
@@ -119,7 +125,9 @@
         />
     <EditText
         style="?android:textAppearanceSmall"
-
+        android:maxLines="1"
+        android:singleLine="true"
+        android:maxLength="11"
         android:id="@+id/profile_phonenumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -138,7 +146,9 @@
         />
     <EditText
         style="?android:textAppearanceSmall"
-
+        android:maxLines="1"
+        android:singleLine="true"
+        android:maxLength="10"
         android:id="@+id/profile_typeofdisabled"
         android:background="@drawable/ic_edittext_typeofdisabled"
         android:layout_width="wrap_content"

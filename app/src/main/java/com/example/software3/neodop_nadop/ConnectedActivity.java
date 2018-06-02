@@ -1,5 +1,6 @@
 package com.example.software3.neodop_nadop;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -65,7 +66,8 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
             MapFragment mapFragment;
             LocationManager locationManager;
 
-
+            boolean finished = false;
+            boolean first = false;
             //Firebase 객체
             FirebaseAuth mAuth;
             FirebaseUser user;
@@ -110,6 +112,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 mFirebaseStorage = FirebaseStorage.getInstance();
 
                 //intent 값 가져오기(상대방의 uid 가져오기) 및 상대방의 정보 가져오기
+                //uid를 여기서 가져옴
                 Intent intent1 = getIntent();
                 uid = intent1.getStringExtra("useruid");
 
@@ -196,6 +199,9 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                     @Override
                     public void onClick(View v) {
                         //여기서 취소버튼 누를시 장애인은 장애인 메인화면으로 , 비장애인은 비 장애인 메인 화면으로 돌아가게해주면됨 -> finish()해주면 될듯
+                        locationManager.removeUpdates(locationListener);
+                        finished = true;
+                        Log.d("finished",finished+"");
                         finish();
                     }
                 });
@@ -228,7 +234,16 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 }
             }
 
-            //권한 요청후 응답 콜백
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finished=true;
+        locationManager.removeUpdates(locationListener);
+
+
+    }
+
+    //권한 요청후 응답 콜백
             @Override
             public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
                 //ACCESS_COARSE_LOCATION 권한
@@ -240,6 +255,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                     //권한못받음
                     else{
                         Toast.makeText(this, "권한없음", Toast.LENGTH_SHORT).show();
+
                         finish();
                     }
                 }
@@ -272,7 +288,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
                     //맵생성
                     SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-                    //콜백클래스 설정
+                    if(!finished)
                     mapFragment.getMapAsync(ConnectedActivity.this);
 
                 }
@@ -306,9 +322,15 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 this.googleMap.getUiSettings().setZoomControlsEnabled(true);   //zoom 버튼 추가
 
-                //나의 위치 설정
-                LatLng position = new LatLng(mLatitude , mLongitude);
-
+                LatLng position;
+                if(!first) {
+                    //나의 위치 설정
+                    position = new LatLng(mLatitude, mLongitude);
+                }else{
+                    //초기값 정해줘야 튕기는 버그가 없는것 같음
+                    position = new LatLng(37.2939288,126.9732337);
+                    first = false;
+                }
 
                 //화면중앙의 위치 (나의 위치) 와 카메라 줌비율
                 this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));

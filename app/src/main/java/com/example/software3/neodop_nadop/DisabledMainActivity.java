@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.Rating;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -23,6 +24,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -125,9 +129,9 @@ public class DisabledMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
      //           Toast.makeText(getApplicationContext(),"여기다가 action 추가해야",Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
+
                 Log.d("myuid",user.getUid().toString());
-                String uid ="";
+
 
 //                //테스트용 uid 전달
 //                if(user.getUid().toString().equals("DFlLOW1GSVhtuSd6dO6tAn9n99B3")){
@@ -136,8 +140,51 @@ public class DisabledMainActivity extends AppCompatActivity {
 //                    uid = "DFlLOW1GSVhtuSd6dO6tAn9n99B3";
 //                }
 
-                intent.putExtra("useruid",uid);
-                startActivity(intent);
+                //필요한 도움의 종류 edittext로 받기
+                AlertDialog.Builder dialog = new AlertDialog.Builder(DisabledMainActivity.this);
+
+                dialog.setTitle("호출하기");
+                dialog.setMessage("어떤 도움이 필요한지 간단히 적어주세요\n상호 동의 후 \n상대방에게 당신의 기본 정보와 위치, \n도움의 종류가 전달됩니다.");
+//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+//                        LinearLayout.LayoutParams.MATCH_PARENT,
+//                        LinearLayout.LayoutParams.MATCH_PARENT);
+                final EditText input = new EditText(DisabledMainActivity.this);
+                //input.setLayoutParams(lp);
+                dialog.setView(input);
+
+                dialog.setPositiveButton("호출하기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String message = input.getText().toString();
+                        Log.d("message 전달",message);
+                        Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
+                        String uid ="";
+                        intent.putExtra("useruid",uid);
+                        startActivity(intent);
+                    }
+                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+
+//                //Rating 받는 dialog
+//                AlertDialog.Builder ratingbar = new AlertDialog.Builder(DisabledMainActivity.this);
+//                View dialogView = getLayoutInflater().inflate(R.layout.ratingbar_dialog,null);
+//                final TextView dialogText = dialogView.findViewById(R.id.dialogEt);
+//                final RatingBar dialogRb = dialogView.findViewById(R.id.dialogRb);
+//
+//                ratingbar.setView(dialogView).setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Toast.makeText(getApplicationContext(), dialogRb.getRating()+dialogText.getText().toString()+"",Toast.LENGTH_SHORT).show();
+//                        dialog.dismiss();
+//                    }
+//                });
+//                ratingbar.show();
+
 
             }
         });

@@ -1,11 +1,15 @@
 package com.example.software3.neodop_nadop;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,18 +22,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.BitmapDrawableResource;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -117,11 +127,29 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 //uid를 여기서 가져옴
                 Intent intent1 = getIntent();
                 uid = intent1.getStringExtra("useruid");
+                Log.d("내uid는",user.getUid());
+                Log.d("상대방uid는",uid);
                 userImage = (CircleImageView)findViewById(R.id.connected_image_profile);
 
                 //ProgressBar
                 progressBar = (ProgressBar)findViewById(R.id.connected_progressbar);
 
+
+                AlertDialog.Builder explanation = new AlertDialog.Builder(ConnectedActivity.this);
+                View dialogView = getLayoutInflater().inflate(R.layout.marker_dialog,null);
+
+                final ImageView marker1 = dialogView.findViewById(R.id.default_marker);
+                final TextView dialogText1 = dialogView.findViewById(R.id.default_marker_text);
+                final ImageView marker2 = dialogView.findViewById(R.id.new_marker);
+                final TextView dialogText2 = dialogView.findViewById(R.id.new_marker_text);
+                final TextView explanText = dialogView.findViewById(R.id.marker_explanation);
+                explanation.setView(dialogView).setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                explanation.show();
 
                 //상대방 profile 사진 불러오기
                 if(!mFirebaseStorage.getReference().child(uid+".jpg").equals(null)) {
@@ -375,13 +403,14 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                         //상대의 Position data 받아옴
                         Position changedPos = dataSnapshot.getValue(Position.class);
 
+
                         //기존의 위치 삭제 -> 안해줄시 marker가 여러개 찍힘
                         if(yourPosition!=null)
                             yourPosition.remove();
 
                         //변경됨 위치 추가
                         if(changedPos != null)
-                            yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(changedPos.getLatitude(),changedPos.getLongitude())).title("상대방의 위치"));
+                            yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(changedPos.getLatitude(),changedPos.getLongitude())).title("상대방의 위치").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
                     }
 
                     @Override
@@ -412,6 +441,13 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
         Matrix matrix = new Matrix();
         matrix.postRotate(degree);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
+    //marker size 줄이기
+    public Bitmap resizeMapIcons(String iconName,int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
     }
 }
 

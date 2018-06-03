@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dip" >
+
+    <ImageView
+        android:id="@+id/default_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:src ="@drawable/default_marker"/>
+
+    <TextView
+        android:id="@+id/default_marker_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/default_marker"
+        android:layout_toRightOf="@id/default_marker"
+        android:layout_marginLeft="10dip"
+        android:textSize="20dp"
+        android:text="나의 위치"
+        android:textColor="#000" />
+    <ImageView
+        android:id="@+id/new_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/default_marker_text"
+        android:layout_toRightOf="@id/default_marker_text"
+        android:scaleType="fitCenter"
+        android:src ="@drawable/marker"/>
+
+    <TextView
+        android:id="@+id/new_marker_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/new_marker"
+        android:layout_toRightOf="@id/new_marker"
+        android:layout_marginLeft="10dip"
+        android:textSize="20dp"
+        android:text="상대방의 위치"
+        android:textColor="#000" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/default_marker"
+        android:layout_marginTop="50dp"
+        android:scaleType ="fitCenter"
+        android:textSize="15dp"
+        android:id="@+id/marker_explanation"
+        android:text="위치를 받아오는데 시간이 걸립니다.\n잠시만 기다려주세요"/>
+
+
+</RelativeLayout>

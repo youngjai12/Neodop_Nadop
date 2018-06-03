@@ -132,13 +132,9 @@ public class DisabledMainActivity extends AppCompatActivity {
 
                 Log.d("myuid",user.getUid().toString());
 
+              //  String uid ;
+                //테스트용 uid 전달
 
-//                //테스트용 uid 전달
-//                if(user.getUid().toString().equals("DFlLOW1GSVhtuSd6dO6tAn9n99B3")){
-//                    uid = "OC1sKS2ghKUp2wtns90uverlfQ22";
-//                }else if(user.getUid().toString().equals("OC1sKS2ghKUp2wtns90uverlfQ22")){
-//                    uid = "DFlLOW1GSVhtuSd6dO6tAn9n99B3";
-//                }
 
                 //필요한 도움의 종류 edittext로 받기
                 AlertDialog.Builder dialog = new AlertDialog.Builder(DisabledMainActivity.this);
@@ -159,6 +155,14 @@ public class DisabledMainActivity extends AppCompatActivity {
                         Log.d("message 전달",message);
                         Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
                         String uid ="";
+
+
+                        //테스트용 uid 전달 tkdgur5273@skku.edu, ray5273@naver.com
+                        if(user.getUid().toString().equals("DFlLOW1GSVhtuSd6dO6tAn9n99B3")){
+                            uid = "OC1sKS2ghKUp2wtns90uverlfQ22";
+                        }else if(user.getUid().toString().equals("OC1sKS2ghKUp2wtns90uverlfQ22")){
+                            uid = "DFlLOW1GSVhtuSd6dO6tAn9n99B3";
+                        }
                         intent.putExtra("useruid",uid);
                         startActivity(intent);
                     }

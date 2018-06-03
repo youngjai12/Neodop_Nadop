@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -67,7 +69,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
             LocationManager locationManager;
 
             boolean finished = false;
-            boolean first = false;
+            boolean first = true;
             //Firebase 객체
             FirebaseAuth mAuth;
             FirebaseUser user;
@@ -92,7 +94,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
             Button cancel;
             TextView profile,typeOfProfile;
             CircleImageView userImage;
-
+            ProgressBar progressBar;
             //value
             String uid=null;
 
@@ -115,9 +117,10 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 //uid를 여기서 가져옴
                 Intent intent1 = getIntent();
                 uid = intent1.getStringExtra("useruid");
-
                 userImage = (CircleImageView)findViewById(R.id.connected_image_profile);
 
+                //ProgressBar
+                progressBar = (ProgressBar)findViewById(R.id.connected_progressbar);
 
 
                 //상대방 profile 사진 불러오기
@@ -289,7 +292,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                     //맵생성
                     SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
                     if(!finished)
-                    mapFragment.getMapAsync(ConnectedActivity.this);
+                          mapFragment.getMapAsync(ConnectedActivity.this);
 
                 }
 
@@ -323,30 +326,42 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 this.googleMap.getUiSettings().setZoomControlsEnabled(true);   //zoom 버튼 추가
 
                 LatLng position;
+
+                //화면중앙의 위치 (나의 위치) 와 카메라 줌비율
                 if(!first) {
+
+                    //progressbar 없애기
+                    progressBar.setVisibility(View.GONE);
                     //나의 위치 설정
                     position = new LatLng(mLatitude, mLongitude);
+                    this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position,15));
+                    Log.d("변경값 ","변경값임");
+                    //원래 나의 위치를 지움 새로운 marker를 설정하기 위함
+                    if(myPosition!=null){
+                        myPosition.remove();
+                    }
+
+                    //나의 위치 변경될 때 마다 위치를 가져와서 지도에 표시
+                    myPosition = this.googleMap.addMarker(new MarkerOptions()
+                            .position(position)
+                            .title("현재 나의 위치"));
+
                 }else{
                     //초기값 정해줘야 튕기는 버그가 없는것 같음
                     position = new LatLng(37.2939288,126.9732337);
+                    CameraPosition cp = new CameraPosition.Builder().target((position )).zoom(15).build();
+
+                    this.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
+                    Log.d("초기값","초기값임");
                     first = false;
                 }
 
-                //화면중앙의 위치 (나의 위치) 와 카메라 줌비율
-                this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            //    this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 
                 Position myPos = new Position(mLatitude,mLongitude);
 
 
-                //원래 나의 위치를 지움 새로운 marker를 설정하기 위함
-                if(myPosition!=null){
-                    myPosition.remove();
-                }
 
-                //나의 위치 변경될 때 마다 위치를 가져와서 지도에 표시
-                myPosition = this.googleMap.addMarker(new MarkerOptions()
-                        .position(position)
-                        .title("현재 나의 위치"));
 
                 //내 위치를 실시간 Database에 업데이트
                 FDB.getReference("userposition").child(myUid).setValue(myPos);

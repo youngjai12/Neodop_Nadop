@@ -153,17 +153,20 @@ public class DisabledMainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String message = input.getText().toString();
                         Log.d("message 전달",message);
-                        Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
+            //          Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
+                        Intent intent = new Intent(getApplicationContext(),WaitActivity.class);
+                        startActivity(intent);
                         String uid ="";
 
 
-                        //테스트용 uid 전달 tkdgur5273@skku.edu, ray5273@naver.com
-                        if(user.getUid().toString().equals("DFlLOW1GSVhtuSd6dO6tAn9n99B3")){
-                            uid = "OC1sKS2ghKUp2wtns90uverlfQ22";
-                        }else if(user.getUid().toString().equals("OC1sKS2ghKUp2wtns90uverlfQ22")){
-                            uid = "DFlLOW1GSVhtuSd6dO6tAn9n99B3";
-                        }
+//                        //테스트용 uid 전달 tkdgur5273@skku.edu, ray5273@naver.com
+//                        if(user.getUid().toString().equals("DFlLOW1GSVhtuSd6dO6tAn9n99B3")){
+//                            uid = "OC1sKS2ghKUp2wtns90uverlfQ22";
+//                        }else if(user.getUid().toString().equals("OC1sKS2ghKUp2wtns90uverlfQ22")){
+//                            uid = "DFlLOW1GSVhtuSd6dO6tAn9n99B3";
+//                        }
                         intent.putExtra("useruid",uid);
+                        intent.putExtra("message",message);
                         startActivity(intent);
                     }
                 }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -197,6 +200,7 @@ public class DisabledMainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),CreateProfileActivity.class);
                 startActivity(intent);
+               // startActivity(new Intent(getApplicationContext(),AcceptActivity.class));
 
             }
         });

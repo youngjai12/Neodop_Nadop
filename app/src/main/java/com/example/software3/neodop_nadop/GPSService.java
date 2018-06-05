@@ -7,6 +7,9 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -34,6 +37,7 @@ import javax.annotation.Nullable;
 public class GPSService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener  {
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
+    private Messenger mClient = null;
 
     private FirebaseAuth mAuth;
     private FirebaseUser user;
@@ -42,6 +46,8 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
     boolean bool=true;
     private static final String LOGSERVICE = "#######";
     httpSendTask s = new httpSendTask();
+    //public static final int MSG_SEND_TO_ACTIVITY = 4;
+
 
     @Override
     public void onCreate() {
@@ -158,6 +164,7 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
                 Log.e("들어오긴하니?","dd");
                 try {
                     URL url = new URL("http://neodop-nadop.iptime.org/updateloc");
+                //    URL url = new URL("localhost:8000/updateloc");
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                     connection.setDoOutput(true);
@@ -256,6 +263,7 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
                 .addApi(LocationServices.API)
                 .build();
     }
+
 
 }
 

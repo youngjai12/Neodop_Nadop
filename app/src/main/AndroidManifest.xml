@@ -24,10 +24,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true">
+        android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.software3.neodop_nadop"
@@ -41,12 +41,12 @@
         <!-- Google Map Api -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAm7OproRXMImAg8zQFYNbclea8vLteW2k"></meta-data>
+            android:value="AIzaSyAm7OproRXMImAg8zQFYNbclea8vLteW2k" />
 
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustNothing"></activity>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/noTitle">
@@ -87,7 +87,14 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".testActivity"></activity>
+        <activity android:name=".testActivity" />
+        <activity
+            android:name=".AcceptActivity"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".WaitActivity"
+            android:theme="@android:style/Theme.Dialog" >
+
+        </activity>
     </application>
 
 </manifest>

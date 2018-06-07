@@ -75,17 +75,33 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"></fragment>
-    <Button
-        android:id="@+id/connected_cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="호출 취소하기 "
-        android:background="@drawable/callbtn_selector"
-        app:layout_constraintTop_toBottomOf="@+id/map"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        />
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/map"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/connected_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="호출 취소하기 "
+                android:background="@drawable/callbtn_selector"
+                app:layout_constraintTop_toBottomOf="@+id/map"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+            <Button
+                android:id="@+id/connected_meet"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/metbtn_selector"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:text="만났음"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
     </android.support.v7.widget.LinearLayoutCompat>
 </android.support.constraint.ConstraintLayout>

@@ -104,7 +104,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         UserProfile profile = new UserProfile(sex.toString(),username.getText().toString(),
                 Integer.parseInt(age.getText().toString()),phonenumber.getText().toString(),disable,
                 typeofDisabled.getText().toString(),  FirebaseInstanceId.getInstance().getToken());
-
+        
 
 
         DB.collection("users").document(userUid).set(profile).addOnSuccessListener(new OnSuccessListener<Void>() {

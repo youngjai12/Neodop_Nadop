@@ -26,6 +26,7 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
     FirebaseUser mUser;
     Button mConfirm ,mCancel;
     String helpee_uid;
+    String uid ;
 
     httpSendTask s;
     @Override
@@ -41,9 +42,11 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         Intent intent = getIntent();
+        uid  = mUser.getUid().toString();
         helpee_uid = intent.getStringExtra("helpee_uid").toString();
         s = new httpSendTask();
-
+       // s.execute();
+        Log.d("실행됩니까?","실행됩니다.");
     }
 
     @Override
@@ -53,29 +56,36 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.btnConfirm:
-
+                Intent intent = getIntent();
+                String message = intent.getStringExtra("help_info");
+                Log.d("정보", message);
                 s.execute();
+//                sendAccept();
                 Intent newintent = new Intent(getApplicationContext(),ConnectedActivity.class);
                 newintent.putExtra("useruid",helpee_uid);
+                newintent.putExtra("message",message);
                 startActivity(newintent);
-                finish();
+            //    finish();
+                Log.d("confirm 버튼누름","good");
                 break;
 
         }
     }
+
+
+
     public  class httpSendTask extends AsyncTask<String, Void, Void> {
         private boolean cancelled = false;
 
         @Override
         protected Void doInBackground(String... strings) {
-            String uid = mUser.getUid();
             Intent intent = getIntent();
-            String message = intent.getStringExtra("message");
 
+            Log.d("asynctask돌림",uid);
 
             try {
                 URL url = new URL("http://neodop-nadop.iptime.org/accepthelp");
-             //   URL url = new URL("localhost:8000/accepthelp");
+                //URL url = new URL("http://localhost:8000/accepthelp");
 
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -86,7 +96,7 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
                 DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
 
 
-                dos.writeBytes("&helperuid=" + uid + "&helpeeuid=" + helpee_uid);
+                dos.writeBytes("&helperuid="+uid+"&helpeeuid="+helpee_uid);
 
                 connection.connect();
                 Log.e("send position to server", uid + ":" + helpee_uid);
@@ -98,7 +108,7 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
                     Log.e("받음", "받음");
                     connection.disconnect();
                 } else if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
-                    Toast.makeText(getApplicationContext(), "다음 기회에", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "다음 기회에", Toast.LENGTH_LONG).show();
                     connection.disconnect();
                     finish();
                 }
@@ -109,6 +119,16 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
         }
 
     }

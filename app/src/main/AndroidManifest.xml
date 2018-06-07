@@ -76,6 +76,8 @@
 
         <!-- Services -->
         <service android:name=".GPSService" />
+        <service android:name=".GPSServiceDisabled" />
+
         <service android:name=".MyFirebaseInstanceIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />

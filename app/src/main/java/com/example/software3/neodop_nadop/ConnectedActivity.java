@@ -101,13 +101,13 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
 
             //취소 버튼
-            Button cancel;
+            Button cancel,met;
             TextView profile,typeOfProfile;
             CircleImageView userImage;
             ProgressBar progressBar;
             //value
             String uid=null;
-
+            String message=null;
 
 
             @Override
@@ -127,8 +127,9 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 //uid를 여기서 가져옴
                 Intent intent1 = getIntent();
                 uid = intent1.getStringExtra("useruid");
-                Log.d("내uid는",user.getUid());
-                Log.d("상대방uid는",uid);
+                message = intent1.getStringExtra("message");
+//                Log.d("내uid는",user.getUid());
+//                Log.d("상대방uid는",uid);
                 userImage = (CircleImageView)findViewById(R.id.connected_image_profile);
 
                 //ProgressBar
@@ -146,7 +147,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 explanation.setView(dialogView).setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
+                                dialog.cancel();
                             }
                         });
                 explanation.show();
@@ -200,30 +201,35 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 profile = (TextView)findViewById(R.id.connected_profile_text);
                 typeOfProfile = (TextView)findViewById(R.id.connected_typeOfProfile);
 
+                if(message==null)
+                    message ="상대방이 아무 정보도 입력하지 않았습니다.";
+                Log.d("메세지",message);
                 //상대방 프로필 정보 가져오기
-                if(uid.equals("")){
-                   Toast.makeText(getApplicationContext(),"상대방의 Uid가 인식되지 않습니다.",Toast.LENGTH_SHORT).show();
-                }
-                if(!uid.equals("")) {
-                    DocumentReference docRef = UDB.collection("users").document(uid);
-                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document.get("disabled").toString().equals("true")) {
-                                    typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  \n 장애종류  \n 도움종류  \n");
-                                    profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString() + "\n"
-                                            + document.get("typeOfDisabled").toString() + "\n" + "아픕니다" + "\n");
-                                } else {
-                                    typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  ");
-                                    profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString());
+                if(uid != null) {
+                    if (uid.equals("")) {
+                        Toast.makeText(getApplicationContext(), "상대방의 Uid가 인식되지 않습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    if (!uid.equals("")) {
+                        DocumentReference docRef = UDB.collection("users").document(uid);
+                        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document.get("disabled").toString().equals("true")) {
+                                        typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  \n 장애종류  \n 도움종류  \n");
+                                        profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString() + "\n"
+                                                + document.get("typeOfDisabled").toString() + "\n" + message + "\n");
+                                    } else {
+                                        typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  ");
+                                        profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString());
+                                    }
                                 }
                             }
-                        }
 
-                        ;
-                    });
+                            ;
+                        });
+                    }
                 }
                 cancel = (Button)findViewById(R.id.connected_cancel);
                 cancel.setOnClickListener(new View.OnClickListener() {
@@ -236,6 +242,18 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                         finish();
                     }
                 });
+
+
+                met = (Button)findViewById(R.id.connected_meet);
+                met.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        locationManager.removeUpdates(locationListener);
+                        finish();
+                    }
+                });
+
 
 
                 //GPS가 켜져있는지 체크
@@ -272,6 +290,11 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
         locationManager.removeUpdates(locationListener);
 
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     //권한 요청후 응답 콜백
@@ -355,34 +378,35 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
                 LatLng position;
 
-                //화면중앙의 위치 (나의 위치) 와 카메라 줌비율
-                if(!first) {
-
-                    //progressbar 없애기
-                    progressBar.setVisibility(View.GONE);
-                    //나의 위치 설정
-                    position = new LatLng(mLatitude, mLongitude);
-                    this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position,15));
-                    Log.d("변경값 ","변경값임");
-                    //원래 나의 위치를 지움 새로운 marker를 설정하기 위함
-                    if(myPosition!=null){
-                        myPosition.remove();
-                    }
-
-                    //나의 위치 변경될 때 마다 위치를 가져와서 지도에 표시
-                    myPosition = this.googleMap.addMarker(new MarkerOptions()
-                            .position(position)
-                            .title("현재 나의 위치"));
-
-                }else{
-                    //초기값 정해줘야 튕기는 버그가 없는것 같음
-                    position = new LatLng(37.2939288,126.9732337);
-                    CameraPosition cp = new CameraPosition.Builder().target((position )).zoom(15).build();
-
-                    this.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
-                    Log.d("초기값","초기값임");
-                    first = false;
+                //progressbar 없애기
+                progressBar.setVisibility(View.GONE);
+                //나의 위치 설정
+                position = new LatLng(mLatitude, mLongitude);
+                this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position,15));
+//                Log.d("변경값 ","변경값임");
+                //원래 나의 위치를 지움 새로운 marker를 설정하기 위함
+                if(myPosition!=null){
+                    myPosition.remove();
                 }
+
+                //나의 위치 변경될 때 마다 위치를 가져와서 지도에 표시
+                myPosition = this.googleMap.addMarker(new MarkerOptions()
+                        .position(position)
+                        .title("현재 나의 위치"));
+
+                //화면중앙의 위치 (나의 위치) 와 카메라 줌비율
+//                if(!first) {
+//
+//
+//                }else{
+//                    //초기값 정해줘야 튕기는 버그가 없는것 같음
+//                    position = new LatLng(37.2939288,126.9732337);
+//                    CameraPosition cp = new CameraPosition.Builder().target((position )).zoom(15).build();
+//
+//                    this.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
+//                    Log.d("초기값","초기값임");
+//                    first = false;
+//                }
 
             //    this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
 

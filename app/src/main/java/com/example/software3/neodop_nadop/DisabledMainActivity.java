@@ -2,23 +2,38 @@ package com.example.software3.neodop_nadop;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.media.Rating;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +46,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +56,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -63,6 +80,7 @@ public class DisabledMainActivity extends AppCompatActivity {
     private static final int CROP_FROM_IMAGE = 2;
 
 
+    LocationManager locationManager;
 
     //Firebase fields
     private FirebaseAuth mAuth;
@@ -84,6 +102,21 @@ public class DisabledMainActivity extends AppCompatActivity {
     CircleImageView userImage;
     Button userChangeImage,test;
     Bitmap bitmap;
+
+    //value
+    double mLatitude;
+    double mLongitude;
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        locationManager.removeUpdates(locationListener);
+        // service 연결 해제
+    }
+
+
 
 
     @Override
@@ -107,6 +140,36 @@ public class DisabledMainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
+        Log.d("token", FirebaseInstanceId.getInstance().getToken().toString());
+      //  startService(new Intent(this,GPSServiceDisabled.class));
+
+        locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            //GPS 설정화면으로 이동
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            startActivity(intent);
+            finish();
+        }
+
+        //마시멜로 이상이면 권한 요청하기
+        if(Build.VERSION.SDK_INT >= 23){
+            //권한이 없는 경우
+            if(ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(DisabledMainActivity.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION , android.Manifest.permission.ACCESS_FINE_LOCATION} , 1);
+            }
+            //권한이 있는 경우
+            else{
+                requestMyLocation();
+            }
+        }
+        //마시멜로 아래
+        else{
+            requestMyLocation();
+        }
+
 
 
         List<String> strings = new ArrayList<String>();
@@ -131,19 +194,13 @@ public class DisabledMainActivity extends AppCompatActivity {
      //           Toast.makeText(getApplicationContext(),"여기다가 action 추가해야",Toast.LENGTH_SHORT).show();
 
                 Log.d("myuid",user.getUid().toString());
+                Log.d("position",mLatitude+"::"+mLongitude);
 
-              //  String uid ;
-                //테스트용 uid 전달
-
-
-                //필요한 도움의 종류 edittext로 받기
                 AlertDialog.Builder dialog = new AlertDialog.Builder(DisabledMainActivity.this);
 
                 dialog.setTitle("호출하기");
                 dialog.setMessage("어떤 도움이 필요한지 간단히 적어주세요\n상호 동의 후 \n상대방에게 당신의 기본 정보와 위치, \n도움의 종류가 전달됩니다.");
-//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-//                        LinearLayout.LayoutParams.MATCH_PARENT,
-//                        LinearLayout.LayoutParams.MATCH_PARENT);
+
                 final EditText input = new EditText(DisabledMainActivity.this);
                 //input.setLayoutParams(lp);
                 dialog.setView(input);
@@ -153,21 +210,15 @@ public class DisabledMainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String message = input.getText().toString();
                         Log.d("message 전달",message);
-            //          Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
+                       // Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
                         Intent intent = new Intent(getApplicationContext(),WaitActivity.class);
-                        startActivity(intent);
                         String uid ="";
-
-
-//                        //테스트용 uid 전달 tkdgur5273@skku.edu, ray5273@naver.com
-//                        if(user.getUid().toString().equals("DFlLOW1GSVhtuSd6dO6tAn9n99B3")){
-//                            uid = "OC1sKS2ghKUp2wtns90uverlfQ22";
-//                        }else if(user.getUid().toString().equals("OC1sKS2ghKUp2wtns90uverlfQ22")){
-//                            uid = "DFlLOW1GSVhtuSd6dO6tAn9n99B3";
-//                        }
                         intent.putExtra("useruid",uid);
                         intent.putExtra("message",message);
+                        double[] pos = {mLatitude,mLongitude};
+                        intent.putExtra("position",pos);
                         startActivity(intent);
+
                     }
                 }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
                     @Override
@@ -299,6 +350,10 @@ public class DisabledMainActivity extends AppCompatActivity {
         });
 
     }
+
+
+
+
     //사진 촬영하여 profile update
     public void takePhotoAction(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -521,5 +576,61 @@ public class DisabledMainActivity extends AppCompatActivity {
         }
         return m_imgUri;
     }
+
+
+    //권한 요청후 응답 콜백
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //ACCESS_COARSE_LOCATION 권한
+        if(requestCode==1){
+            //권한받음
+            if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                requestMyLocation();
+            }
+            //권한못받음
+            else{
+                Toast.makeText(this, "권한없음", Toast.LENGTH_SHORT).show();
+
+                finish();
+            }
+        }
+    }
+    //나의 위치 요청
+    public void requestMyLocation(){
+        if(ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        //요청
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 5, locationListener);
+    }
+
+    //위치정보 구하기 리스너
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            if(ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                return;
+            }
+            //나의 위치를 한번만 가져오기 위해    //여기 지우면 계속 바뀌네 바꿔줄때마다
+            //   locationManager.removeUpdates(locationListener);
+
+            //위도 경도
+            mLatitude = location.getLatitude();   //위도
+            mLongitude = location.getLongitude(); //경도
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) { Log.d("gps", "onStatusChanged"); }
+
+        @Override
+        public void onProviderEnabled(String provider) { }
+
+        @Override
+        public void onProviderDisabled(String provider) { }
+    };
+
 
 }

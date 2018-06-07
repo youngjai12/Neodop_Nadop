@@ -19,11 +19,11 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="height" value="20" />
-                            <entry key="outputName" value="marker" />
+                            <entry key="height" value="50" />
+                            <entry key="outputName" value="ic_metbtn_pressed" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="C:\Users\ray52\Desktop\marker.svg" />
-                            <entry key="width" value="20" />
+                            <entry key="sourceFile" value="C:\Users\ray52\Desktop\아이콘 제작\connected페이지\metbtn_pressed.svg" />
+                            <entry key="width" value="165" />
                           </map>
                         </option>
                       </PersistentState>

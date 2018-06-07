@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -47,6 +48,12 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
     private static final String LOGSERVICE = "#######";
     httpSendTask s = new httpSendTask();
     //public static final int MSG_SEND_TO_ACTIVITY = 4;
+
+
+
+    public IBinder onBind(Intent intent){
+        return null;
+    }
 
 
     @Override
@@ -128,10 +135,10 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
         String today = null;
         today = formatter.format(cal.getTime());
         Timestamp ts = Timestamp.valueOf(today);
-
+        Log.d("현재시간은",cal.getTime().toString());
 
         Log.e("시간?",""+ts.getTime()/1000);
-        time += ts.getTime()/1000;
+        time += ts.getTime()/1000+43203;
 
         //
         if(s!=null) {
@@ -164,7 +171,7 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
                 Log.e("들어오긴하니?","dd");
                 try {
                     URL url = new URL("http://neodop-nadop.iptime.org/updateloc");
-                //    URL url = new URL("localhost:8000/updateloc");
+                    //URL url = new URL("http://localhost:8000/updateloc");
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                     connection.setDoOutput(true);
@@ -214,11 +221,6 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
         stopLocationUpdate();
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {

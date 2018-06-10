@@ -9,6 +9,8 @@ public class UserProfile {
     private String typeOfDisabled;
     private String token;
     private String sex;
+    private double rating;
+    private long numOfRaters;
 
     public String getName() {
         return name;
@@ -38,7 +40,11 @@ public class UserProfile {
         return sex;
     }
 
-    public UserProfile(String sex, String name, int age , String phoneNumber, boolean isDisabled, String typeOfDisabled, String token) {
+    public double getRating(){return rating;}
+
+    public long getNumOfRaters(){return numOfRaters;}
+
+    public UserProfile(String sex, String name, int age , String phoneNumber, boolean isDisabled, String typeOfDisabled, String token,double rating,long numOfRaters) {
         this.name = name;
         this.age = age;
         this.phoneNumber = phoneNumber;
@@ -46,5 +52,7 @@ public class UserProfile {
         this.typeOfDisabled = typeOfDisabled;
         this.token = token;
         this.sex = sex;
+        this.rating = rating;
+        this.numOfRaters = numOfRaters;
     }
 }

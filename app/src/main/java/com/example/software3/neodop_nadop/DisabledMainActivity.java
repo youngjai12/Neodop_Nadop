@@ -60,6 +60,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -101,6 +104,7 @@ public class DisabledMainActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
+    private FirebaseFirestore mFireStore;
 
 
     //layouts
@@ -153,6 +157,7 @@ public class DisabledMainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
+        mFireStore = FirebaseFirestore.getInstance();
         Log.d("token", FirebaseInstanceId.getInstance().getToken().toString());
       //  startService(new Intent(this,GPSServiceDisabled.class));
 
@@ -176,6 +181,29 @@ public class DisabledMainActivity extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), dialogRb.getRating() + dialogText.getText().toString() + "", Toast.LENGTH_SHORT).show();
                                         s = new httpSendTasks();
                                         s.execute(dialogRb.getRating()+"/"+us.getYourUid().toString());
+
+
+                                        //여기서 rating 추가
+                                        DocumentReference docRef = mFireStore.collection("users").document(us.getYourUid().toString());
+                                        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if(task.isSuccessful()){
+                                                    DocumentSnapshot ds = task.getResult();
+                                                    double preRating = ds.getDouble("rating");
+                                                    long numOfRaters = ds.getLong("numOfRaters");
+                                                    numOfRaters++;
+                                                    mFireStore.collection("users").document(us.getYourUid()).update("numOfRaters",numOfRaters);
+
+                                                    double Rating = (preRating + dialogRb.getRating())/(double)numOfRaters;
+                                                    mFireStore.collection("users").document(us.getYourUid()).update("rating",Rating);
+                                                    Log.d("numOfRators and rating",numOfRaters+" and "+Rating);
+                                                }
+                                            }
+                                        });
+                                        mFireStore.collection("users").document(us.getYourUid().toString());
+
+
                                         mFirebaseDatabase.getReference("userstatus").child(user.getUid().toString()).child("finished").setValue(true);
                                         dialog.cancel();
                                     }
@@ -281,7 +309,7 @@ public class DisabledMainActivity extends AppCompatActivity {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(DisabledMainActivity.this);
 
                 dialog.setTitle("호출하기");
-                dialog.setMessage("어떤 도움이 필요한지 간단히 적어주세요\n상호 동의 후 \n상대방에게 당신의 기본 정보와 위치, \n도움의 종류가 전달됩니다.");
+                dialog.setMessage("어디서(실내라면 몇층인지도 알려주세요)\n어떤 도움이 필요한지 간단히 적어주세요\n상호 동의 후 \n상대방에게 당신의 기본 정보와 위치, \n도움의 종류가 전달됩니다.");
 
                 final EditText input = new EditText(DisabledMainActivity.this);
                 //input.setLayoutParams(lp);

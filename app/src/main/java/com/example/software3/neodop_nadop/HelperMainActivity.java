@@ -48,6 +48,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -85,7 +86,7 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
-
+    private FirebaseFirestore mFirebaseFirestore;
 
     //layouts
     private String imageFilePath;
@@ -107,6 +108,8 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper_main);
 
+
+        mFirebaseFirestore = FirebaseFirestore.getInstance();
         //layouts
         textView = (TextView)findViewById(R.id.helper_lower_text);
         swc = (Switch)findViewById(R.id.help_enable);

@@ -1,5 +1,7 @@
 package com.example.software3.neodop_nadop;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -52,6 +54,8 @@ public class testActivity extends AppCompatActivity  {
         user = mAuth.getCurrentUser();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
+        Intent intent = new Intent(this,GPSService.class);
+        stopService(intent);
         //imageView
         test = (ImageView)findViewById(R.id.test_image_profile);
 

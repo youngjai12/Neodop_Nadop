@@ -20,6 +20,7 @@ import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.media.Rating;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -54,18 +55,26 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -74,10 +83,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DisabledMainActivity extends AppCompatActivity {
 
+
+    public static boolean finished = true;
+
     //constant
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
-    private static final int CROP_FROM_IMAGE = 2;
 
 
     LocationManager locationManager;
@@ -107,6 +118,8 @@ public class DisabledMainActivity extends AppCompatActivity {
     double mLatitude;
     double mLongitude;
 
+    //asynctask
+    httpSendTasks s;
 
 
     @Override
@@ -142,6 +155,75 @@ public class DisabledMainActivity extends AppCompatActivity {
         mFirebaseStorage = FirebaseStorage.getInstance();
         Log.d("token", FirebaseInstanceId.getInstance().getToken().toString());
       //  startService(new Intent(this,GPSServiceDisabled.class));
+
+        s = new httpSendTasks();
+
+        if(mFirebaseDatabase.getReference("userstatus")!=null) {
+            mFirebaseDatabase.getReference("userstatus").child(user.getUid().toString()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       //Rating 받는 dialog
+                        final UserStatus us = dataSnapshot.getValue(UserStatus.class);
+                        if (us != null) {
+                            if (!us.getFinished()) {
+                                final AlertDialog.Builder ratingbar = new AlertDialog.Builder(DisabledMainActivity.this);
+                                View dialogView = getLayoutInflater().inflate(R.layout.ratingbar_dialog, null);
+                                final TextView dialogText = dialogView.findViewById(R.id.dialogEt);
+                                final RatingBar dialogRb = dialogView.findViewById(R.id.dialogRb);
+                                ratingbar.setView(dialogView).setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Toast.makeText(getApplicationContext(), dialogRb.getRating() + dialogText.getText().toString() + "", Toast.LENGTH_SHORT).show();
+                                        s = new httpSendTasks();
+                                        s.execute(dialogRb.getRating()+"/"+us.getYourUid().toString());
+                                        mFirebaseDatabase.getReference("userstatus").child(user.getUid().toString()).child("finished").setValue(true);
+                                        dialog.cancel();
+                                    }
+                                }).setNegativeButton("아직 안끝남", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Handler hd = new Handler();
+
+                                        hd.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String newString = Calendar.getInstance().getTime().toString();
+                                                mFirebaseDatabase.getReference("userstatus").child(user.getUid().toString()).child("changeValue").setValue(newString);
+
+                                            }
+                                        } ,10000);
+                                        //끝났는지 몇분뒤 다시 물어볼지를 여기서 결정
+
+                                        dialog.cancel();
+                                        //여기서 핸들러 써서
+                                    }
+                                });
+                                Handler hd = new Handler();
+
+                                hd.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        ratingbar.show();
+
+                                    }
+                                } ,2000);
+
+                            }
+                        }
+
+                }
+
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
+
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
@@ -227,21 +309,6 @@ public class DisabledMainActivity extends AppCompatActivity {
                     }
                 });
                 dialog.show();
-
-//                //Rating 받는 dialog
-//                AlertDialog.Builder ratingbar = new AlertDialog.Builder(DisabledMainActivity.this);
-//                View dialogView = getLayoutInflater().inflate(R.layout.ratingbar_dialog,null);
-//                final TextView dialogText = dialogView.findViewById(R.id.dialogEt);
-//                final RatingBar dialogRb = dialogView.findViewById(R.id.dialogRb);
-//
-//                ratingbar.setView(dialogView).setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Toast.makeText(getApplicationContext(), dialogRb.getRating()+dialogText.getText().toString()+"",Toast.LENGTH_SHORT).show();
-//                        dialog.dismiss();
-//                    }
-//                });
-//                ratingbar.show();
 
 
             }
@@ -632,5 +699,57 @@ public class DisabledMainActivity extends AppCompatActivity {
         public void onProviderDisabled(String provider) { }
     };
 
+
+    public  class httpSendTasks extends AsyncTask<String, Void, Void> {
+        private boolean cancelled = false;
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            //Intent intent = getIntent();
+           // String myUid = user.getUid().toString();
+            String[] ratnuid = strings[0].split("/");
+            String rating = ratnuid[0];
+            String yourUid = ratnuid[1];
+
+
+            try {
+                URL url = new URL("http://neodop-nadop.iptime.org/finishhelp");
+                //URL url = new URL("http://localhost:8000/accepthelp");
+
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+
+                connection.setRequestMethod("POST");
+                DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+
+
+                dos.writeBytes("&helperuid=" + yourUid + "&rating="+rating +"&helpeeuid="+user.getUid().toString());
+
+                connection.connect();
+                Log.e("send position to server", rating + "앞: rating,  뒤: 상대 uid:" + yourUid);
+
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    // Do whatever you want after the
+                    // token is successfully stored on the server
+                    Log.e("받음", "받음");
+                    connection.disconnect();
+                } else if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+//                    Toast.makeText(getApplicationContext(), "다음 기회에", Toast.LENGTH_LONG).show();
+                    Log.d("오류", "bad_request");
+                    connection.disconnect();
+
+                    //       finish();
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 
 }

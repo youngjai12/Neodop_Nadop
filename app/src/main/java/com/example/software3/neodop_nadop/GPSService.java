@@ -122,7 +122,7 @@ public class GPSService extends Service implements GoogleApiClient.ConnectionCal
         LatLng mLocation = (new LatLng(location.getLatitude(), location.getLongitude()));
         Toast.makeText(getApplicationContext(),"위도"+ mLocation.latitude + "경도"+mLocation.longitude,Toast.LENGTH_SHORT).show();
 
-        Position pos = new Position(location.getLatitude(),location.getLongitude());
+        Position pos = new Position(location.getLatitude(),location.getLongitude(),false);
 
         FDB.getReference("userposition").child(user.getUid()).setValue(pos);
         String la = ""+location.getLatitude();

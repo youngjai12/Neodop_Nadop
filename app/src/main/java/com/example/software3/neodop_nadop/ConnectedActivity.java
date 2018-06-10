@@ -1,5 +1,6 @@
 package com.example.software3.neodop_nadop;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.ExifInterface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
@@ -62,8 +64,12 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -72,7 +78,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 //서로 수락시 연결될 Activity
 public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCallback{
+            AcceptActivity mAcceptactivity = (AcceptActivity)AcceptActivity.mAcceptActivity;
 
+            public static AppCompatActivity mConnectedActivity;
+
+
+            boolean mymet = false;
+            boolean yourmet = false;
+            //disabled
+            static boolean is_disabled ;
             //GoogleMap 객체
             GoogleMap googleMap;
             MapFragment mapFragment;
@@ -108,6 +122,9 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
             //value
             String uid=null;
             String message=null;
+            String myUid;
+            //asynctask
+            httpSendTask s ;
 
 
             @Override
@@ -116,6 +133,13 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 setContentView(R.layout.activity_connected);
                 locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
+                //activity 선언
+                mConnectedActivity = ConnectedActivity.this;
+
+                s = new httpSendTask();
+
+
+
                 mAuth = FirebaseAuth.getInstance();
                 user = mAuth.getCurrentUser();
                 FDB = FirebaseDatabase.getInstance();
@@ -123,13 +147,16 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 UDB = FirebaseFirestore.getInstance();
                 mFirebaseStorage = FirebaseStorage.getInstance();
 
+
+                //버그 수정용
+//                mAcceptactivity.finish();
+//                mAcceptactivity.finish();
+
                 //intent 값 가져오기(상대방의 uid 가져오기) 및 상대방의 정보 가져오기
                 //uid를 여기서 가져옴
                 Intent intent1 = getIntent();
                 uid = intent1.getStringExtra("useruid");
                 message = intent1.getStringExtra("message");
-//                Log.d("내uid는",user.getUid());
-//                Log.d("상대방uid는",uid);
                 userImage = (CircleImageView)findViewById(R.id.connected_image_profile);
 
                 //ProgressBar
@@ -220,9 +247,11 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                                         typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  \n 장애종류  \n 도움종류  \n");
                                         profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString() + "\n"
                                                 + document.get("typeOfDisabled").toString() + "\n" + message + "\n");
+                                        is_disabled = false;
                                     } else {
                                         typeOfProfile.setText(" 이름   \n 성별   \n 전화번호  ");
                                         profile.setText(document.get("name").toString() + "\n" + document.get("sex").toString() + "\n" + document.get("phoneNumber").toString());
+                                        is_disabled = true;
                                     }
                                 }
                             }
@@ -239,6 +268,13 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                         locationManager.removeUpdates(locationListener);
                         finished = true;
                         Log.d("finished",finished+"");
+                        if(!is_disabled){
+                            //버그 없애기
+                            startService(new Intent(getApplicationContext(),GPSService.class));
+                            mAcceptactivity.finish();
+                        }
+                        //여기서 끝났다는 신호를 보내줌
+                        s.execute();
                         finish();
                     }
                 });
@@ -248,11 +284,58 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                 met.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        myUid = user.getUid().toString();
+                        //만났음을 전송함
+                        FDB.getReference("userposition").child(myUid).child("met").setValue(true);
+                        mymet = true;
                         locationManager.removeUpdates(locationListener);
-                        finish();
+
+                        if(mymet && yourmet) {
+                            FDB.getReference("userposition").child(myUid).child("met").setValue(false);
+                            finish();
+                            if(!is_disabled) {
+                                mAcceptactivity.finish();
+                                startService(new Intent(getApplicationContext(),GPSService.class));
+                            }
+                            UserStatus us = new UserStatus("0",false,uid);
+                            FDB.getReference("userstatus").child(myUid).setValue(us);
+                        }
                     }
                 });
+
+                //상대방도 체크했는지
+                DB.child("userposition").child(uid).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //상대의 Position data 받아옴
+                        Position pos = dataSnapshot.getValue(Position.class);
+                        if(pos != null)
+                            yourmet = pos.getMet();
+                        Log.d("상대방의 것이",yourmet+"으로 바뀜");
+
+                        if(mymet && yourmet) {
+                            FDB.getReference("userposition").child(myUid).child("met").setValue(false);
+                            finish();
+                            if(!is_disabled) {
+                                startService(new Intent(getApplicationContext(),GPSService.class));
+                                mAcceptactivity.finish();
+                            }else {
+                                UserStatus us = new UserStatus("0",false,uid);
+                                FDB.getReference("userstatus").child(myUid).setValue(us);
+                       //         DisabledMainActivity.finished = false;
+                       //         startActivity(new Intent(getApplicationContext(),DisabledMainActivity.class));
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
 
 
 
@@ -287,6 +370,7 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
     protected void onDestroy() {
         super.onDestroy();
         finished=true;
+        s.cancel(true);
         locationManager.removeUpdates(locationListener);
 
 
@@ -394,31 +478,11 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                         .position(position)
                         .title("현재 나의 위치"));
 
-                //화면중앙의 위치 (나의 위치) 와 카메라 줌비율
-//                if(!first) {
-//
-//
-//                }else{
-//                    //초기값 정해줘야 튕기는 버그가 없는것 같음
-//                    position = new LatLng(37.2939288,126.9732337);
-//                    CameraPosition cp = new CameraPosition.Builder().target((position )).zoom(15).build();
-//
-//                    this.googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
-//                    Log.d("초기값","초기값임");
-//                    first = false;
-//                }
-
-            //    this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
-
-                Position myPos = new Position(mLatitude,mLongitude);
-
-
+                Position myPos = new Position(mLatitude,mLongitude,mymet);
 
 
                 //내 위치를 실시간 Database에 업데이트
                 FDB.getReference("userposition").child(myUid).setValue(myPos);
-
-
 
                 //상대방의 위치가 변경될 때 마다 위치를 가져와서 지도에 표시
                 DB.child("userposition").child(yourUid).addValueEventListener(new ValueEventListener() {
@@ -435,6 +499,8 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
                         //변경됨 위치 추가
                         if(changedPos != null)
                             yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(changedPos.getLatitude(),changedPos.getLongitude())).title("상대방의 위치").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+
+
                     }
 
                     @Override
@@ -442,7 +508,6 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
                     }
                 });
-
 
             }
 
@@ -473,6 +538,108 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
+
+    public  class httpSendTask extends AsyncTask<String, Void, Void> {
+        private boolean cancelled = false;
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            Intent intent = getIntent();
+            String myUid = user.getUid().toString();
+            String yourUid = uid;
+            Log.d("취소하는 asynctask",uid);
+            if(is_disabled) {
+                try {
+                    URL url = new URL("http://neodop-nadop.iptime.org/cancel_request");
+                    //URL url = new URL("http://localhost:8000/accepthelp");
+
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+
+                    connection.setRequestMethod("POST");
+                    DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+
+
+                    dos.writeBytes("&helperuid=" +yourUid + "&helpeeuid=" + myUid);
+
+                    connection.connect();
+                    Log.e("send position to server", myUid + "본인이 장애인인 경우" + yourUid);
+
+
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        // Do whatever you want after the
+                        // token is successfully stored on the server
+                        Log.e("받음", "받음");
+                        connection.disconnect();
+                    } else if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+//                    Toast.makeText(getApplicationContext(), "다음 기회에", Toast.LENGTH_LONG).show();
+                        Log.d("이미 수락됨", "이미 수락됨");
+                        connection.disconnect();
+
+                 //       finish();
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    URL url = new URL("http://neodop-nadop.iptime.org/cancel_help");
+                    //URL url = new URL("http://localhost:8000/accepthelp");
+
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+
+                    connection.setRequestMethod("POST");
+                    DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+
+
+                    dos.writeBytes("&helperuid=" + myUid + "&helpeeuid=" + yourUid);
+
+                    connection.connect();
+                    Log.e("send position to server", myUid + "본인이 비 장애인일 경우" + yourUid);
+
+
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        // Do whatever you want after the
+                        // token is successfully stored on the server
+                        Log.e("받음", "받음");
+                        connection.disconnect();
+                    } else if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+//                    Toast.makeText(getApplicationContext(), "다음 기회에", Toast.LENGTH_LONG).show();
+                        Log.d("이미 수락됨", "이미 수락됨");
+                        connection.disconnect();
+
+//                        finish();
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+    }
+
+
+
 }
 
 

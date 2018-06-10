@@ -524,6 +524,8 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
                             "3. 안내할 때 장애인이 수월하게 걸을 수 있도록 팔을 내주는것은 문제가 없으나 \n 시각장애인의 팔을 잡거나 끄는 행위는 실례되는 행위이므로 주의합시다\n\n" +
                             "4. 길 안내를 할 때에는 저기, 여기 와 같은 \n애매한 표현은 삼가도록 주의합니다.";
                     textView.setText(text);
+//                    Intent intent = new Intent(this,testActivity.class);
+//                    startActivity(intent);
                     break;
                 case R.id.helper_lower_btn2:
                     btn2.setBackgroundResource(R.drawable.ic_btn_pressed);

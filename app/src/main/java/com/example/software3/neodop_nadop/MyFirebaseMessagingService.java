@@ -2,6 +2,7 @@ package com.example.software3.neodop_nadop;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -9,6 +10,9 @@ import com.google.firebase.messaging.RemoteMessage;
 import static android.support.constraint.Constraints.TAG;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    AcceptActivity mAcceptactivity = (AcceptActivity)AcceptActivity.mAcceptActivity;
+    ConnectedActivity mConnectedActivity = (ConnectedActivity)ConnectedActivity.mConnectedActivity;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // ...
@@ -23,12 +27,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
    //         String requestname = remoteMessage.getData().get("type");
    //         Log.d("type",requestname);
             if(remoteMessage.getData().get("type").equals("request")) {
+
                 Intent intent = new Intent(getApplicationContext(), AcceptActivity.class);
                 String uid = remoteMessage.getData().get("helpee_uid");
                 String helpinfo = remoteMessage.getData().get("help_info");
 
-                Log.d("string helpinfo", uid);
-                Log.d("string help", helpinfo);
+                Log.d("string help", uid);
+                Log.d("string helpinfo", helpinfo);
 
                 intent.putExtra("help_info", helpinfo);
                 intent.putExtra("helpee_uid", uid);
@@ -39,15 +44,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 intent.putExtra("useruid",uid);
                 intent.putExtra("message","nothing");
                 startActivity(intent);
+            }else if(remoteMessage.getData().get("type").equals("canceledby_disabled")){
+                    //상대방이 취소했습니다.
+//                    Toast.makeText(getApplicationContext(),"상대방이 취소하셨습니다.",Toast.LENGTH_SHORT).show();
+
+                    //켜져 있던 상태에서 받으므로 다시 켜야함
+                    startService(new Intent(this,GPSService.class));
+                    if(!mConnectedActivity.isFinishing())
+                         mConnectedActivity.finish();
+                    if(!mAcceptactivity.isFinishing())
+                        mAcceptactivity.finish();
+                    startActivity(new Intent(this,CancelNotificationActivity.class));
+
+
+            }else if(remoteMessage.getData().get("type").equals("canceledby_helper")){
+                //상대방이 취소했습니다.
+//                    Toast.makeText(getApplicationContext(),"상대방이 취소하셨습니다.",Toast.LENGTH_SHORT).show();
+                    if(!mConnectedActivity.isFinishing())
+                     mConnectedActivity.finish();
+
+                     startActivity(new Intent(this,CancelNotificationActivity.class));
             }
 
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                //scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                //handleNow();
-            }
 
         }
 

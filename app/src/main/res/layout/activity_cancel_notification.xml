@@ -4,33 +4,20 @@
     android:layout_height="100dip" >
 
     <TextView
+        android:layout_centerHorizontal="true"
         android:id="@+id/txtView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="수락 하시겠습니까?"
+        android:text="상대방이 취소하셨습니다."
         android:textSize="25sp" />
-
     <Button
-        android:id="@+id/btnConfirm"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/btnCancel"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/btnCancel"
-        android:text="확인" />
-
-    <Button
-        android:id="@+id/btnCancel"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="취소" />
-
-
+        android:layout_alignParentRight="true"
+        android:id="@+id/cancel_notification_btn"
+        android:text="확인"/>
 </RelativeLayout>
-
-

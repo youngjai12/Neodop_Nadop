@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +36,7 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
     String helpee_uid;
     String uid ;
     private FirebaseDatabase FDB;
+    TextView tv;
 
     httpSendTask s;
     @Override
@@ -55,12 +57,18 @@ public class AcceptActivity extends Activity implements View.OnClickListener {
         mCancel.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
+
         Intent intent = getIntent();
+        String message = intent.getStringExtra("help_info").toString();
         uid  = mUser.getUid().toString();
         helpee_uid = intent.getStringExtra("helpee_uid").toString();
         s = new httpSendTask();
        // s.execute();
         Log.d("실행됩니까?","실행됩니다.");
+
+        //받은 도움 종류를 화면에 출력
+        tv = (TextView)findViewById(R.id.accept_message);
+        tv.setText(message);
 
         if(FDB.getReference().child(helpee_uid)!=null) {
             FDB.getReference("request").child(helpee_uid).addValueEventListener(new ValueEventListener() {

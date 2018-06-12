@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
@@ -167,33 +168,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                               DocumentSnapshot userProfile = task.getResult();
-                               if(task.isSuccessful() && userProfile.exists()){
-                                   if(userProfile.get("disabled").equals("true")){
-                                       //장애인 전용 메뉴 activity 실행
-                                       Intent intent = new Intent(getApplicationContext(), DisabledMainActivity.class);
-                                       startActivity(intent);
-                                       finish();
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document != null && document.exists()) {
+                                    if (document.get("disabled").equals(true)) {
+                                        Intent intent = new Intent(getApplicationContext(), DisabledMainActivity.class);
+                                        startActivity(intent);
+                                  //      finish();
+                                    } else {
+                                        Intent intent = new Intent(getApplicationContext(), HelperMainActivity.class);
+                                        startActivity(intent);
+                                   //     finish();
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "No Such Data", Toast.LENGTH_LONG).show();
 
-                                   }else{
-                                       //도우미 전용 메뉴 activity 실행
-                                       Intent intent = new Intent(getApplicationContext(), HelperMainActivity.class);
-                                       startActivity(intent);
-                                       finish();
-                                   }
+                                    Intent intent = new Intent(getApplicationContext(), CreateProfileActivity.class);
+                                    startActivity(intent);
 
+                                }
 
-                               }else{
-                                   Toast.makeText(getApplicationContext(),"No Such Data",Toast.LENGTH_LONG).show();
-
-                                   Intent intent = new Intent(getApplicationContext(),CreateProfileActivity.class);
-                                   startActivity(intent);
-                                   finish();
-
-                                  }
-
+                            }
                         }
-
                     });
 
                 }else{

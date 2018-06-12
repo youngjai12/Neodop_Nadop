@@ -41,6 +41,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }else if(remoteMessage.getData().get("type").equals("match_success")){
                 String uid = remoteMessage.getData().get("helper_uid");
                 Intent intent = new Intent(getApplicationContext(),ConnectedActivity.class);
+//                Log.d("match_success",uid);
                 intent.putExtra("useruid",uid);
                 intent.putExtra("message","nothing");
                 startActivity(intent);

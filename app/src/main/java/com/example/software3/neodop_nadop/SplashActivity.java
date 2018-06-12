@@ -55,7 +55,6 @@ public class SplashActivity extends Activity {
 
 
 
-
         if(user != null){
             DocumentReference docRef = DB.collection("users").document(user.getUid());
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -65,6 +64,8 @@ public class SplashActivity extends Activity {
                         DocumentSnapshot document = task.getResult();
                         if(document!=null && document.exists()){
                             if(document.get("disabled").equals(true)){
+                        //        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        //        startActivity(intent);
                                 Intent intent = new Intent (getApplicationContext(),DisabledMainActivity.class);
                                 startActivity(intent);
                                 //       finish();

@@ -159,6 +159,7 @@ public class DisabledMainActivity extends AppCompatActivity {
         mFirebaseStorage = FirebaseStorage.getInstance();
         mFireStore = FirebaseFirestore.getInstance();
         Log.d("token", FirebaseInstanceId.getInstance().getToken().toString());
+        mFireStore.collection("users").document(user.getUid().toString()).update("token",FirebaseInstanceId.getInstance().getToken().toString());
       //  startService(new Intent(this,GPSServiceDisabled.class));
 
         s = new httpSendTasks();
@@ -178,7 +179,7 @@ public class DisabledMainActivity extends AppCompatActivity {
                                 ratingbar.setView(dialogView).setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        Toast.makeText(getApplicationContext(), dialogRb.getRating() + dialogText.getText().toString() + "", Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(getParent(), dialogRb.getRating() + dialogText.getText().toString() + "", Toast.LENGTH_SHORT).show();
                                         s = new httpSendTasks();
                                         s.execute(dialogRb.getRating()+"/"+us.getYourUid().toString());
 
@@ -266,9 +267,14 @@ public class DisabledMainActivity extends AppCompatActivity {
         //마시멜로 이상이면 권한 요청하기
         if(Build.VERSION.SDK_INT >= 23){
             //권한이 없는 경우
-            if(ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(DisabledMainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(DisabledMainActivity.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION , android.Manifest.permission.ACCESS_FINE_LOCATION} , 1);
+            if(ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                    ){
+                ActivityCompat.requestPermissions(DisabledMainActivity.this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION , android.Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.READ_EXTERNAL_STORAGE
+                        ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA  } , 1);
             }
             //권한이 있는 경우
             else{

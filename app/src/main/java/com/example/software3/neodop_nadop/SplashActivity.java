@@ -52,10 +52,6 @@ public class SplashActivity extends Activity {
     }
 
     protected void routeToPage(FirebaseUser user){
-
-
-
-
         if(user != null){
             DocumentReference docRef = DB.collection("users").document(user.getUid());
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

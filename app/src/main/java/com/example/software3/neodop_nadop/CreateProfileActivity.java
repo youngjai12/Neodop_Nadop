@@ -39,7 +39,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_profile);
+        setContentView(R.layout.activity_create_profile); //즉 리소스의 레이웃에 있는 activity create profile을 사용하라. 즉 이걸 on create로 상속시켜라.
         username = (EditText)findViewById(R.id.profile_name);
         age = (EditText)findViewById(R.id.profile_age);
         phonenumber=(EditText)findViewById(R.id.profile_phonenumber);

@@ -54,7 +54,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter> <!--intent filter은 처음 화면 시작할때 어떤 화면이 launch가 되는지 정해주는 것 -->
         </activity>
         <activity
             android:name=".SignUpActivity"

@@ -464,10 +464,10 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
 
     //Firebase 에 프로필 사진과 profile 데이터 보내기
     private void sendToFirebase(Uri imgUri){
-        String uid = user.getUid();
-        StorageReference storageRef = mFirebaseStorage.getReference();
+            String uid = user.getUid();
+            StorageReference storageRef = mFirebaseStorage.getReference();
 
-        if(user.getPhotoUrl()!=null)
+            if(user.getPhotoUrl()!=null)
             storageRef.child(uid+".jpg").delete();
 
         StorageReference profileRef = storageRef.child(uid+".jpg");

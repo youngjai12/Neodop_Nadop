@@ -498,7 +498,9 @@ public class ConnectedActivity extends AppCompatActivity implements OnMapReadyCa
 
                         //변경됨 위치 추가
                         if(changedPos != null)
-                            yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(changedPos.getLatitude(),changedPos.getLongitude())).title("상대방의 위치").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                            yourPosition = googleMap.addMarker(new MarkerOptions().position(new LatLng(
+                                    changedPos.getLatitude(), changedPos.getLongitude())).title("상대방의 위치").
+                                    icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
 
 
                     }

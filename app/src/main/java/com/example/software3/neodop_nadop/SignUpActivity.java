@@ -72,26 +72,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
 
-        if(password.length()<6){
-            mPassword.setError("Minimum length of password should be 6");
-            mPassword.requestFocus();
-            return;
-
-        }
-
         mAuth.createUserWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                      if(task.isSuccessful()){
                          FirebaseUser user = mAuth.getCurrentUser();
-                         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>(){
                              @Override
                              public void onComplete(@NonNull Task<Void> task) {
                                  Toast.makeText(getApplicationContext(),"메일 인증을 해주세요", Toast.LENGTH_LONG).show();
                              }
                          });
                      }else{
-                         Toast.makeText(getApplicationContext(),"에러가 발생했습니다.", Toast.LENGTH_LONG).show();
+                         Toast.makeText(getApplicationContext(),"인증 중에 에러가 발생했습니다.", Toast.LENGTH_LONG).show();
                      }
 
             }

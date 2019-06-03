@@ -19,6 +19,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -35,6 +36,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -46,8 +48,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FileDownloadTask;
@@ -65,6 +72,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -140,6 +148,10 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
         Log.d("token", FirebaseInstanceId.getInstance().getToken().toString());
+        mFirebaseFirestore.collection("users").document(user.getUid().toString()).update("token",FirebaseInstanceId.getInstance().getToken().toString());
+
+
+   
 
 
         test.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +210,7 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         });
+
 
 
         //기존의 profile 불러오기
@@ -527,7 +540,9 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
                             "3. 안내할 때 장애인이 수월하게 걸을 수 있도록 팔을 내주는것은 문제가 없으나 \n 시각장애인의 팔을 잡거나 끄는 행위는 실례되는 행위이므로 주의합시다\n\n" +
                             "4. 길 안내를 할 때에는 저기, 여기 와 같은 \n애매한 표현은 삼가도록 주의합니다.";
                     textView.setText(text);
-//                    Intent intent = new Intent(this,testActivity.class);
+//                    Intent intent = new Intent(this,AcceptActivity.class);
+//                    intent.putExtra("help_info","메세지 입니다.");
+//                    intent.putExtra("helpee_uid","dddd");
 //                    startActivity(intent);
                     break;
                 case R.id.helper_lower_btn2:
@@ -562,4 +577,5 @@ public class HelperMainActivity extends AppCompatActivity implements View.OnClic
                     break;
             }
     }
+
 }

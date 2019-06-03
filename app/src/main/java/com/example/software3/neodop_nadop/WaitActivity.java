@@ -55,6 +55,7 @@ public class WaitActivity extends Activity {
         Intent intent = getIntent();
         position = intent.getDoubleArrayExtra("position");
         Log.d("가져온 position",position[0]+"::"+position[1]);
+        Toast.makeText(getApplicationContext(),"대기 화면이 켜지고 일정시간(10초) 반응이 없으면, 도와줄 사람이 주위에 없는것 입니다.",Toast.LENGTH_LONG).show();
         s.execute();
     }
 

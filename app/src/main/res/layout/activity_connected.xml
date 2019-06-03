@@ -95,7 +95,7 @@
                 android:textStyle="bold" />
             <Button
                 android:id="@+id/connected_meet"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/metbtn_selector"
                 android:textColor="#FFFFFF"
